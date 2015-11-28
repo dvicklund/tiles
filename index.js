@@ -4,7 +4,7 @@ var app = express();
 app.use(express.static('build'));
 
 app.get('/', function(req, res) {
-  res.redirect(300, 'index.html');
+  res.redirect(301, './index.html');
 })
 
 app.listen(process.env.PORT || 3000, function() {
