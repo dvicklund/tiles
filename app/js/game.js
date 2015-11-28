@@ -24,8 +24,6 @@ var Map = function(cellsX, cellsY) {
         }
       }
     }
-
-    console.log(this.mapArray);
   };
 };
 
