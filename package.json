@@ -4,7 +4,6 @@
   "description": "A simple, randomly generated, tile-based game",
   "main": "game.js",
   "scripts": {
-    "build": "gulp",
     "start": "node index.js",
     "test": "gulp"
   },
@@ -20,6 +19,11 @@
   "homepage": "https://github.com/dvicklund/tiles#readme",
   "dependencies": {
     "express": "^4.13.3",
+  },
+  "devDependencies": {
+    "chai": "^3.4.1",
+    "chai-http": "^1.0.0",
+    "mocha": "^2.3.4"
     "gulp": "^3.9.0",
     "webpack-stream": "^2.2.0"
   }
