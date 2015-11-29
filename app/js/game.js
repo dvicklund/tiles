@@ -19,15 +19,17 @@ var Map = function(cellsX, cellsY) {
         if(y === 0 || y === this.cellsY - 1 || x === 0 || x === this.cellsX - 1) {
           this.mapArray[y].push(2);
         } else if(y === this.cellsY - 2 && x === this.cellsX - 2) {
-          this.mapArray[y].push(5)
+          this.mapArray[y].push(5);
         } else if(y === 1 && x === 1) {
           this.mapArray[y].push(3);
+        } else if((y === 2 && (x === 1 || x === 2)) || (y === 1 && x === 2)) {
+          this.mapArray[y].push(0);
         } else {
           this.mapArray[y].push(Math.round(Math.random(1) * 0.7));
         }
       }
     }
-  };
+  }
 
   this.renewMap = function() {
     this.mapArray = [];
@@ -40,6 +42,8 @@ var Map = function(cellsX, cellsY) {
           this.mapArray[y].push(5)
         } else if(y === 1 && x === 1) {
           this.mapArray[y].push(3);
+        } else if((y === 2 && (x === 1 || x === 2)) || (y === 1 && x === 2)) {
+          this.mapArray[y].push(0);
         } else {
           this.mapArray[y].push(Math.round(Math.random(1) * 0.7));
         }
@@ -85,6 +89,7 @@ var Renderer = function(width, height) {
   this.map = new Map(width, height);
   this.map.genMap();
   this.map.genPortal();
+  this.score = 0;
 
   this.draw = function() {
     context.clearRect(0, 0, canvas.width, canvas.height);
@@ -111,6 +116,7 @@ var Renderer = function(width, height) {
         }
       });
     });
+    this.drawScore();
   }.bind(this);
 
   this.drawTile = function(color, x, y) {
@@ -120,6 +126,12 @@ var Renderer = function(width, height) {
       this.tileX, this.tileY
     );
   };
+
+  this.drawScore = function() {
+    context.fillStyle = "rgba(20, 255, 255, 0.9)";
+    context.font = '2em serif';
+    context.fillText('Score: ' + this.score, 20, canvas.height - 20);
+  }
 
   this.refreshDimensions = function() {
     canvas.height = window.innerHeight;
@@ -152,13 +164,13 @@ var Entity = function(rend, cont, xPos, yPos) {
     if(this.renderer.map.mapArray[this.yPos][this.xPos] === 5) {
       this.renderer.map.renewMap();
       this.renderer.map.genPortal();
+      this.renderer.score += 1;
       this.xPos = 1;
       this.yPos = 1;
     } else if(this.renderer.map.mapArray[this.yPos][this.xPos] === 4) {
       this.renderer.map.refreshMap();
       this.renderer.map.genPortal();
       this.renderer.map.mapArray[this.yPos][this.xPos] = 3;
-
     }
   };
 
