@@ -93,12 +93,28 @@
 	    }
 	  }
 
+	  this.refreshMap = function() {
+	    this.mapArray = [];
+	    for(var y = 0; y < this.cellsY; y++) {
+	      for(var x = 0; x < this.cellsX; x++) {
+	        if(!this.mapArray[y]) this.mapArray[y] = [];
+	        if(y === 0 || y === this.cellsY - 1 || x === 0 || x === this.cellsX - 1) {
+	          this.mapArray[y].push(2);
+	        } else if(y === this.cellsY - 2 && x === this.cellsX - 2) {
+	          this.mapArray[y].push(5)
+	        } else {
+	          this.mapArray[y].push(Math.round(Math.random(1) * 0.7));
+	        }
+	      }
+	    }
+	  }
+
 	  this.genPortal = function() {
 	    var seed;
 	    this.mapArray.forEach(function(row, y, Yarr) {
 	      row.forEach(function(tile, x, Xarr) {
 	        seed = Math.random();
-	        if(seed >= 0.98) {
+	        if(seed >= 0.98 && (tile === 0 || tile === 1)) {
 	          Xarr[x] = 4;
 	        }
 	      });
@@ -163,7 +179,7 @@
 	    var fromVal = this.map.mapArray[y][x];
 	    var newVal = this.map.mapArray[y + dy][x + dx];
 
-	    if(newVal !== 5) {
+	    if(newVal !== 5 && newVal !== 4) {
 	      this.map.mapArray[y + dy][x + dx] = fromVal;
 	      this.map.mapArray[y][x] = newVal;
 	    } 
@@ -184,6 +200,11 @@
 	      this.renderer.map.genPortal();
 	      this.xPos = 1;
 	      this.yPos = 1;
+	    } else if(this.renderer.map.mapArray[this.yPos][this.xPos] === 4) {
+	      this.renderer.map.refreshMap();
+	      this.renderer.map.genPortal();
+	      this.renderer.map.mapArray[this.yPos][this.xPos] = 3;
+
 	    }
 	  };
 
@@ -191,6 +212,7 @@
 	    if(this.yPos - 1 > 0 && this.renderer.map.mapArray[this.yPos-1][this.xPos] !== 1) {
 	      this.renderer.moveEntity(this.xPos, this.yPos, 0, -1);
 	      this.yPos--;
+	      this.checkPos();
 	    }
 	  };
 
@@ -214,6 +236,7 @@
 	    if(this.xPos-1 > 0 && this.renderer.map.mapArray[this.yPos][this.xPos-1] !== 1) {
 	      this.renderer.moveEntity(this.xPos, this.yPos, -1, 0);
 	      this.xPos--;
+	      this.checkPos();
 	    }
 	  };
 	  
