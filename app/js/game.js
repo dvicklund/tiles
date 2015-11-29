@@ -228,4 +228,4 @@ window.addEventListener('resize', Render.refreshDimensions, false);
 //window.addEventListener('keypress', Player.keyPressed, false);
 window.addEventListener('keypress', Player.keyPressed, false);
 
-var gameLoop = setInterval(Render.draw, 100);
+var gameLoop = setInterval(Render.draw, 40);

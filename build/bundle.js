@@ -264,19 +264,6 @@
 	      this.moveRight();
 	    }
 	  }.bind(this);
-
-	  // this.keyDown = function(e) {
-	  //   var keyCode = String.fromCharCode(e.keyCode);
-	  //   if (keyCode === "w") {
-	  //     this.moveUp();
-	  //   } else if (keyCode === "a") {
-	  //     this.moveLeft();
-	  //   } else if (keyCode === "s") {
-	  //     this.moveDown();
-	  //   } else if (keyCode === "d") {
-	  //     this.moveRight();
-	  //   }
-	  // }.bind(this);
 	};
 
 
@@ -287,7 +274,7 @@
 	//window.addEventListener('keypress', Player.keyPressed, false);
 	window.addEventListener('keypress', Player.keyPressed, false);
 
-	var gameLoop = setInterval(Render.draw, 100);
+	var gameLoop = setInterval(Render.draw, 40);
 
 /***/ }
 /******/ ]);
