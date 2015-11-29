@@ -218,19 +218,6 @@ var Entity = function(rend, cont, xPos, yPos) {
       this.moveRight();
     }
   }.bind(this);
-
-  // this.keyDown = function(e) {
-  //   var keyCode = String.fromCharCode(e.keyCode);
-  //   if (keyCode === "w") {
-  //     this.moveUp();
-  //   } else if (keyCode === "a") {
-  //     this.moveLeft();
-  //   } else if (keyCode === "s") {
-  //     this.moveDown();
-  //   } else if (keyCode === "d") {
-  //     this.moveRight();
-  //   }
-  // }.bind(this);
 };
 
 
