@@ -234,7 +234,7 @@ var Entity = function(rend, cont, xPos, yPos) {
 };
 
 
-var Render = new Renderer(20, 14);
+var Render = new Renderer(25, 14);
 var Player = new Entity(Render, true);
 
 window.addEventListener('resize', Render.refreshDimensions, false);
