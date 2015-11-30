@@ -8,12 +8,12 @@ var Entity = module.exports = function(rend, cont, xPos, yPos) {
     if(this.renderer.map.mapArray[this.yPos][this.xPos] === 5) {
       this.renderer.map.renewMap();
       this.renderer.map.genPortal();
-      this.renderer.score += 1;
+      this.renderer.score += 1; 
       this.renderer.checkHiScore();
       this.xPos = 1;
       this.yPos = 1;
     } else if(this.renderer.map.mapArray[this.yPos][this.xPos] === 4) {
-      this.renderer.map.refreshMap();
+      this.renderer.map.refreshMap(this.xPos, this.yPos);
       this.renderer.map.genPortal();
       this.renderer.map.mapArray[this.yPos][this.xPos] = 3;
     }

@@ -1,9 +1,11 @@
 var Map = require('./map');
 
 var Renderer = module.exports = function(context, width, height) {
+  // Map dimensions number of tiles
   this.width = width;
   this.height = height;
   
+  // Tile dimensions by pixel
   this.tileX = canvas.width / width; 
   this.tileY = canvas.height / height;
   
@@ -25,7 +27,7 @@ var Renderer = module.exports = function(context, width, height) {
       var self = this;
       requestAnimationFrame(self.draw);
 
-      if(this.frameCounter % 5 === 0) {
+      if(this.frameCounter % 4 === 0) {
         var colorSeedR = Math.floor(Math.random() * 256);
         var colorSeedG = Math.floor(Math.random() * 256);
         var colorSeedB = Math.floor(Math.random() * 256);
@@ -50,6 +52,7 @@ var Renderer = module.exports = function(context, width, height) {
           }
         });
       });
+
       this.drawScore();
       this.drawHiScore();
       this.drawInstructions();
@@ -101,12 +104,12 @@ var Renderer = module.exports = function(context, width, height) {
   }.bind(this);
 
   this.moveEntity = function(x, y, dx, dy) {
-    var fromVal = this.map.mapArray[y][x];
-    var newVal = this.map.mapArray[y + dy][x + dx];
+    var origPos = this.map.mapArray[y][x];
+    var newPos = this.map.mapArray[y + dy][x + dx];
 
-    if(newVal !== 5 && newVal !== 4) {
-      this.map.mapArray[y + dy][x + dx] = fromVal;
-      this.map.mapArray[y][x] = newVal;
+    if(newPos !== 5 && newPos !== 4) {
+      this.map.mapArray[y + dy][x + dx] = origPos;
+      this.map.mapArray[y][x] = newPos;
     } 
   }.bind(this);
 };

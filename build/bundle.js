@@ -68,9 +68,11 @@
 	var Map = __webpack_require__(2);
 
 	var Renderer = module.exports = function(context, width, height) {
+	  // Map dimensions number of tiles
 	  this.width = width;
 	  this.height = height;
 	  
+	  // Tile dimensions by pixel
 	  this.tileX = canvas.width / width; 
 	  this.tileY = canvas.height / height;
 	  
@@ -92,7 +94,7 @@
 	      var self = this;
 	      requestAnimationFrame(self.draw);
 
-	      if(this.frameCounter % 5 === 0) {
+	      if(this.frameCounter % 4 === 0) {
 	        var colorSeedR = Math.floor(Math.random() * 256);
 	        var colorSeedG = Math.floor(Math.random() * 256);
 	        var colorSeedB = Math.floor(Math.random() * 256);
@@ -117,6 +119,7 @@
 	          }
 	        });
 	      });
+
 	      this.drawScore();
 	      this.drawHiScore();
 	      this.drawInstructions();
@@ -153,7 +156,7 @@
 	  }
 
 	  this.drawInstructions = function() {
-	    context.fillStyle = "rgba(180, 180, 180, 0.5)";
+	    context.fillStyle = "rgba(180, 180, 180, 0.6)";
 	    context.font = '1.2em sans-serif';
 	    context.textAlign = 'center';
 	    context.fillText('WASD to Move - R to Restart :(', canvas.width / 2, canvas.height - 15);
@@ -168,12 +171,12 @@
 	  }.bind(this);
 
 	  this.moveEntity = function(x, y, dx, dy) {
-	    var fromVal = this.map.mapArray[y][x];
-	    var newVal = this.map.mapArray[y + dy][x + dx];
+	    var origPos = this.map.mapArray[y][x];
+	    var newPos = this.map.mapArray[y + dy][x + dx];
 
-	    if(newVal !== 5 && newVal !== 4) {
-	      this.map.mapArray[y + dy][x + dx] = fromVal;
-	      this.map.mapArray[y][x] = newVal;
+	    if(newPos !== 5 && newPos !== 4) {
+	      this.map.mapArray[y + dy][x + dx] = origPos;
+	      this.map.mapArray[y][x] = newPos;
 	    } 
 	  }.bind(this);
 	};
@@ -200,14 +203,14 @@
 	          this.mapArray[y].push(5);
 	        } else if(y === 1 && x === 1) {
 	          this.mapArray[y].push(3);
-	        } else if((y === 2 && (x === 1 || x === 2)) || (y === 1 && x === 2)) {
+	        } else if((y >= 1 && y <= 3) && (x >= 1 && x <= 3)) {
 	          this.mapArray[y].push(0);
 	        } else {
 	          this.mapArray[y].push(Math.round(Math.random(1) * 0.7));
 	        }
 	      }
 	    }
-	  }
+	  };
 
 	  this.renewMap = function() {
 	    this.mapArray = [];
@@ -220,16 +223,16 @@
 	          this.mapArray[y].push(5);
 	        } else if(y === 1 && x === 1) {
 	          this.mapArray[y].push(3);
-	        } else if((y === 2 && (x === 1 || x === 2)) || (y === 1 && x === 2)) {
+	        } else if((y >= 1 && y <= 3) && (x >= 1 && x <= 3)) {
 	          this.mapArray[y].push(0);
 	        } else {
 	          this.mapArray[y].push(Math.round(Math.random(1) * 0.7));
 	        }
 	      }
 	    }
-	  }
+	  };
 
-	  this.refreshMap = function() {
+	  this.refreshMap = function(xPos, yPos) {
 	    this.mapArray = [];
 	    for(var y = 0; y < this.cellsY; y++) {
 	      for(var x = 0; x < this.cellsX; x++) {
@@ -237,13 +240,15 @@
 	        if(y === 0 || y === this.cellsY - 1 || x === 0 || x === this.cellsX - 1) {
 	          this.mapArray[y].push(2);
 	        } else if(y === this.cellsY - 2 && x === this.cellsX - 2) {
-	          this.mapArray[y].push(5)
+	          this.mapArray[y].push(5);
+	        } else if(Math.abs(xPos - x) <= 1 && Math.abs(yPos - y) <= 1) {
+	          this.mapArray[y].push(0);
 	        } else {
 	          this.mapArray[y].push(Math.round(Math.random(1) * 0.7));
 	        }
 	      }
 	    }
-	  }
+	  };
 
 	  this.genPortal = function() {
 	    var seed;
@@ -274,12 +279,12 @@
 	    if(this.renderer.map.mapArray[this.yPos][this.xPos] === 5) {
 	      this.renderer.map.renewMap();
 	      this.renderer.map.genPortal();
-	      this.renderer.score += 1;
+	      this.renderer.score += 1; 
 	      this.renderer.checkHiScore();
 	      this.xPos = 1;
 	      this.yPos = 1;
 	    } else if(this.renderer.map.mapArray[this.yPos][this.xPos] === 4) {
-	      this.renderer.map.refreshMap();
+	      this.renderer.map.refreshMap(this.xPos, this.yPos);
 	      this.renderer.map.genPortal();
 	      this.renderer.map.mapArray[this.yPos][this.xPos] = 3;
 	    }
