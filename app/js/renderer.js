@@ -3,12 +3,17 @@ var Map = require('./map');
 var Renderer = module.exports = function(context, width, height) {
   this.width = width;
   this.height = height;
+  
   this.tileX = canvas.width / width; 
   this.tileY = canvas.height / height;
+  
   this.map = new Map(width, height);
   this.map.genMap();
   this.map.genPortal();
+  
   this.score = 0;
+  this.highScore = 0;
+  
   var fps = 60;
   this.frameCounter = 0;
   this.portalColor;
