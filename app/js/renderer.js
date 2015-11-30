@@ -86,7 +86,7 @@ var Renderer = module.exports = function(context, width, height) {
   }
 
   this.drawInstructions = function() {
-    context.fillStyle = "rgba(180, 180, 180, 0.5)";
+    context.fillStyle = "rgba(180, 180, 180, 0.6)";
     context.font = '1.2em sans-serif';
     context.textAlign = 'center';
     context.fillText('WASD to Move - R to Restart :(', canvas.width / 2, canvas.height - 15);
