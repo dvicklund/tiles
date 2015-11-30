@@ -13,4 +13,4 @@ var Player = new Entity(Render, true);
 window.addEventListener('resize', Render.refreshDimensions, false);
 window.addEventListener('keypress', Player.keyPressed, false);
 
-var gameLoop = setInterval(Render.draw, 40);
+Render.draw();

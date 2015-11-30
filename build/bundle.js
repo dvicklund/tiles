@@ -59,7 +59,7 @@
 	window.addEventListener('resize', Render.refreshDimensions, false);
 	window.addEventListener('keypress', Player.keyPressed, false);
 
-	var gameLoop = setInterval(Render.draw, 40);
+	Render.draw();
 
 /***/ },
 /* 1 */
@@ -76,33 +76,39 @@
 	  this.map.genMap();
 	  this.map.genPortal();
 	  this.score = 0;
+	  var fps = 60;
 
 	  this.draw = function() {
-	    context.clearRect(0, 0, canvas.width, canvas.height);
-	    var self = this;
-	    var colorSeedR = Math.floor(Math.random() * 256);
-	    var colorSeedG = Math.floor(Math.random() * 256);
-	    var colorSeedB = Math.floor(Math.random() * 256);
-	    var portalColor = 'rgba(' + colorSeedR + ', ' + colorSeedG + ', ' + colorSeedB + ', 1.0)';
 
-	    this.map.mapArray.forEach(function(row, y) {
-	      row.forEach(function(tile, x) {
-	        if(tile === 3) {
-	          self.drawTile("rgba(0, 0, 255, 0.9)", x, y);
-	        } else if(tile === 5) {
-	          self.drawTile("rgba(250, 255, 0, 0.9)", x, y);
-	        } else if(tile === 4) {
-	          self.drawTile(portalColor, x, y);
-	        } else if(tile === 2) {
-	          self.drawTile("rgba(150, 70, 70, 0.9)", x, y);
-	        } else if(tile === 1) {
-	          self.drawTile("rgba(0, 0, 0, 0.8)", x, y);
-	        } else {
-	          self.drawTile("rgba(15, 200, 35, 0.8)", x, y);
-	        }
+	    // Recursive call for continuous animation
+	    setTimeout(function() {
+	      context.clearRect(0, 0, canvas.width, canvas.height);
+	      var self = this;
+	      requestAnimationFrame(self.draw);
+	      var colorSeedR = Math.floor(Math.random() * 256);
+	      var colorSeedG = Math.floor(Math.random() * 256);
+	      var colorSeedB = Math.floor(Math.random() * 256);
+	      var portalColor = 'rgba(' + colorSeedR + ', ' + colorSeedG + ', ' + colorSeedB + ', 1.0)';
+
+	      this.map.mapArray.forEach(function(row, y) {
+	        row.forEach(function(tile, x) {
+	          if(tile === 3) {
+	            self.drawTile("rgba(0, 0, 255, 0.9)", x, y);
+	          } else if(tile === 5) {
+	            self.drawTile("rgba(250, 255, 0, 0.9)", x, y);
+	          } else if(tile === 4) {
+	            self.drawTile(portalColor, x, y);
+	          } else if(tile === 2) {
+	            self.drawTile("rgba(150, 70, 70, 0.9)", x, y);
+	          } else if(tile === 1) {
+	            self.drawTile("rgba(0, 0, 0, 0.8)", x, y);
+	          } else {
+	            self.drawTile("rgba(15, 200, 35, 0.8)", x, y);
+	          }
+	        });
 	      });
-	    });
-	    this.drawScore();
+	      this.drawScore();
+	    }.bind(this), 1000 / fps);
 	  }.bind(this);
 
 	  this.drawTile = function(color, x, y) {
@@ -135,7 +141,6 @@
 	      this.map.mapArray[y + dy][x + dx] = fromVal;
 	      this.map.mapArray[y][x] = newVal;
 	    } 
-
 	  }.bind(this);
 	};
 
