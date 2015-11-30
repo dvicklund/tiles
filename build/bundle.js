@@ -189,7 +189,7 @@
 	        if(y === 0 || y === this.cellsY - 1 || x === 0 || x === this.cellsX - 1) {
 	          this.mapArray[y].push(2);
 	        } else if(y === this.cellsY - 2 && x === this.cellsX - 2) {
-	          this.mapArray[y].push(5)
+	          this.mapArray[y].push(5);
 	        } else if(y === 1 && x === 1) {
 	          this.mapArray[y].push(3);
 	        } else if((y === 2 && (x === 1 || x === 2)) || (y === 1 && x === 2)) {
