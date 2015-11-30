@@ -77,18 +77,24 @@
 	  this.map.genPortal();
 	  this.score = 0;
 	  var fps = 60;
+	  this.frameCounter = 0;
+	  this.portalColor;
 
 	  this.draw = function() {
-
+	    this.frameCounter++;
 	    // Recursive call for continuous animation
 	    setTimeout(function() {
 	      context.clearRect(0, 0, canvas.width, canvas.height);
 	      var self = this;
 	      requestAnimationFrame(self.draw);
-	      var colorSeedR = Math.floor(Math.random() * 256);
-	      var colorSeedG = Math.floor(Math.random() * 256);
-	      var colorSeedB = Math.floor(Math.random() * 256);
-	      var portalColor = 'rgba(' + colorSeedR + ', ' + colorSeedG + ', ' + colorSeedB + ', 1.0)';
+
+	      if(this.frameCounter % 5 === 0) {
+	        var colorSeedR = Math.floor(Math.random() * 256);
+	        var colorSeedG = Math.floor(Math.random() * 256);
+	        var colorSeedB = Math.floor(Math.random() * 256);
+	        this.portalColor = 'rgba(' + colorSeedR + ', ' + colorSeedG + ', ' + colorSeedB + ', 1.0)';
+	        this.frameCounter = 0;
+	      }
 
 	      this.map.mapArray.forEach(function(row, y) {
 	        row.forEach(function(tile, x) {
@@ -97,7 +103,7 @@
 	          } else if(tile === 5) {
 	            self.drawTile("rgba(250, 255, 0, 0.9)", x, y);
 	          } else if(tile === 4) {
-	            self.drawTile(portalColor, x, y);
+	            self.drawTile(self.portalColor, x, y);
 	          } else if(tile === 2) {
 	            self.drawTile("rgba(150, 70, 70, 0.9)", x, y);
 	          } else if(tile === 1) {
