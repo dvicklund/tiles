@@ -17,7 +17,7 @@ gulp.task('static:dev', function() {
 
 // Move meat and bones to build
 gulp.task('webpack:dev', function() {
-  return gulp.src('app/js/game.js')
+  return gulp.src(['app/js/game.js'])
   .pipe(webpack({
     output: {
       filename: 'bundle.js'
