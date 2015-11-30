@@ -9,6 +9,7 @@ var Entity = module.exports = function(rend, cont, xPos, yPos) {
       this.renderer.map.renewMap();
       this.renderer.map.genPortal();
       this.renderer.score += 1;
+      this.renderer.checkHiScore();
       this.xPos = 1;
       this.yPos = 1;
     } else if(this.renderer.map.mapArray[this.yPos][this.xPos] === 4) {
@@ -60,6 +61,12 @@ var Entity = module.exports = function(rend, cont, xPos, yPos) {
       this.moveDown();
     } else if (keyCode === "d") {
       this.moveRight();
+    } else if (keyCode === "r") {
+      this.renderer.map.renewMap();
+      this.renderer.map.genPortal();
+      this.renderer.score = 0;
+      this.xPos = 1;
+      this.yPos = 1;
     }
   }.bind(this);
 };

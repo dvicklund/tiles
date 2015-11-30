@@ -50,9 +50,9 @@
 	var windowHeight = document.defaultView.innerHeight;
 	canvas.height = windowHeight;
 	canvas.width = windowWidth;
+
 	var Renderer = __webpack_require__(1);
 	var Entity = __webpack_require__(3);
-
 	var Render = new Renderer(context, 25, 14);
 	var Player = new Entity(Render, true);
 
@@ -70,19 +70,23 @@
 	var Renderer = module.exports = function(context, width, height) {
 	  this.width = width;
 	  this.height = height;
+	  
 	  this.tileX = canvas.width / width; 
 	  this.tileY = canvas.height / height;
+	  
 	  this.map = new Map(width, height);
 	  this.map.genMap();
 	  this.map.genPortal();
+	  
 	  this.score = 0;
+	  this.highScore = 0;
+	  
 	  var fps = 60;
 	  this.frameCounter = 0;
 	  this.portalColor;
 
 	  this.draw = function() {
 	    this.frameCounter++;
-	    // Recursive call for continuous animation
 	    setTimeout(function() {
 	      context.clearRect(0, 0, canvas.width, canvas.height);
 	      var self = this;
@@ -114,6 +118,8 @@
 	        });
 	      });
 	      this.drawScore();
+	      this.drawHiScore();
+	      this.drawInstructions();
 	    }.bind(this), 1000 / fps);
 	  }.bind(this);
 
@@ -125,10 +131,32 @@
 	    );
 	  };
 
+	  this.checkHiScore = function() {
+	    if(this.score > this.highScore) {
+	      this.highScore = this.score;
+	    }
+	    return this.highScore;
+	  }
+
 	  this.drawScore = function() {
 	    context.fillStyle = "rgba(20, 255, 255, 0.9)";
 	    context.font = '2em serif';
-	    context.fillText('Score: ' + this.score, 20, canvas.height - 20);
+	    context.textAlign = 'left';
+	    context.fillText('Score: ' + this.score, 20, canvas.height - 15 );
+	  }
+
+	  this.drawHiScore = function() {
+	    context.fillStyle = "rgba(255, 255, 140, 0.9)";
+	    context.font = '2em serif';
+	    context.textAlign = 'right';
+	    context.fillText('High Score: ' + this.highScore, canvas.width - 20, canvas.height - 15);
+	  }
+
+	  this.drawInstructions = function() {
+	    context.fillStyle = "rgba(180, 180, 180, 0.5)";
+	    context.font = '1.2em sans-serif';
+	    context.textAlign = 'center';
+	    context.fillText('WASD to Move - R to Restart :(', canvas.width / 2, canvas.height - 15);
 	  }
 
 	  this.refreshDimensions = function() {
@@ -247,6 +275,7 @@
 	      this.renderer.map.renewMap();
 	      this.renderer.map.genPortal();
 	      this.renderer.score += 1;
+	      this.renderer.checkHiScore();
 	      this.xPos = 1;
 	      this.yPos = 1;
 	    } else if(this.renderer.map.mapArray[this.yPos][this.xPos] === 4) {
@@ -298,6 +327,12 @@
 	      this.moveDown();
 	    } else if (keyCode === "d") {
 	      this.moveRight();
+	    } else if (keyCode === "r") {
+	      this.renderer.map.renewMap();
+	      this.renderer.map.genPortal();
+	      this.renderer.score = 0;
+	      this.xPos = 1;
+	      this.yPos = 1;
 	    }
 	  }.bind(this);
 	};

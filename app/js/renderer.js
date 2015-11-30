@@ -20,7 +20,6 @@ var Renderer = module.exports = function(context, width, height) {
 
   this.draw = function() {
     this.frameCounter++;
-    // Recursive call for continuous animation
     setTimeout(function() {
       context.clearRect(0, 0, canvas.width, canvas.height);
       var self = this;
@@ -52,6 +51,8 @@ var Renderer = module.exports = function(context, width, height) {
         });
       });
       this.drawScore();
+      this.drawHiScore();
+      this.drawInstructions();
     }.bind(this), 1000 / fps);
   }.bind(this);
 
@@ -63,10 +64,32 @@ var Renderer = module.exports = function(context, width, height) {
     );
   };
 
+  this.checkHiScore = function() {
+    if(this.score > this.highScore) {
+      this.highScore = this.score;
+    }
+    return this.highScore;
+  }
+
   this.drawScore = function() {
     context.fillStyle = "rgba(20, 255, 255, 0.9)";
     context.font = '2em serif';
-    context.fillText('Score: ' + this.score, 20, canvas.height - 20);
+    context.textAlign = 'left';
+    context.fillText('Score: ' + this.score, 20, canvas.height - 15 );
+  }
+
+  this.drawHiScore = function() {
+    context.fillStyle = "rgba(255, 255, 140, 0.9)";
+    context.font = '2em serif';
+    context.textAlign = 'right';
+    context.fillText('High Score: ' + this.highScore, canvas.width - 20, canvas.height - 15);
+  }
+
+  this.drawInstructions = function() {
+    context.fillStyle = "rgba(180, 180, 180, 0.5)";
+    context.font = '1.2em sans-serif';
+    context.textAlign = 'center';
+    context.fillText('WASD to Move - R to Restart :(', canvas.width / 2, canvas.height - 15);
   }
 
   this.refreshDimensions = function() {
