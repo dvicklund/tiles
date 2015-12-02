@@ -8,6 +8,8 @@ var Map = module.exports = function(cellsX, cellsY) {
 
   // Player's current map level
   this.level = 0;
+  this.portalFreq = 0.02;
+  this.enemyFreq = 0.001;
 
   // Initializes this.mapArray
   this.genMap = function() {
@@ -32,6 +34,11 @@ var Map = module.exports = function(cellsX, cellsY) {
   // Creates a new map and places the player back at the starting block
   this.renewMap = function() {
     this.level += 1;
+    
+    this.portalFreq = 0.02 - (this.level*0.0005);
+    if(this.portalFreq < 0.00) this.portalFreq = 0;
+    this.enemyFreq = 0.001 * this.level;
+    
     this.mapArray = [];
     for(var y = 0; y < this.cellsY; y++) {
       for(var x = 0; x < this.cellsX; x++) {
@@ -64,7 +71,7 @@ var Map = module.exports = function(cellsX, cellsY) {
         } else if(Math.abs(xPos - x) <= 1 && Math.abs(yPos - y) <= 1) {
           this.mapArray[y].push(0);
         } else {
-          this.mapArray[y].push(Math.round(Math.random(1) * 0.7));
+          this.mapArray[y].push(Math.round(Math.random(1) * 0.68));
         }
       }
     }
@@ -72,29 +79,30 @@ var Map = module.exports = function(cellsX, cellsY) {
 
   // Creates a number of portals relative to input Number (from 0.000 - 1.000)
   // Note: Decimals not required but allowed in order to refine extremes of rarity
-  this.genPortal = function(prob) {
+  this.genPortal = function() {
     var seed;
     this.mapArray.forEach(function(row, y, Yarr) {
       row.forEach(function(tile, x, Xarr) {
         seed = Math.random();
-        if(seed >= 1 - prob && (tile === 0 || tile === 1)) {
+        if(seed >= 1 - this.portalFreq && (tile === 0 || tile === 1)) {
           Xarr[x] = 4;
         }
-      });
-    });
+      }.bind(this));
+    }.bind(this));
   };
 
   // Generates enemies based on the input probability Number (0.0 - 1.0)
-  this.genEnemy = function(prob) {
+  this.genEnemy = function() {
     var enemySeed;
+    var self = this;
     this.mapArray.forEach(function(row, y, Yarr) {
       row.forEach(function(tile, x, Xarr) {
         enemySeed = Math.random();
-        if(seed >= 1 - prob && (tile === 0 || tile === 1)) {
+        if(enemySeed >= 1 - this.enemyFreq && (tile === 0 || tile === 1)) {
           Xarr[x] = 6;
         }
-      });
-    });
+      }.bind(this));
+    }.bind(this));
   };
 };
 

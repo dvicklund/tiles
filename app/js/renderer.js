@@ -12,7 +12,8 @@ var Renderer = module.exports = function(context, width, height) {
   // Initialize level map
   this.map = new Map(width, height);
   this.map.genMap();
-  this.map.genPortal(0.02);
+  this.map.genPortal();
+  this.map.genEnemy();
   
   // Score.
   this.score = 0;
@@ -22,6 +23,8 @@ var Renderer = module.exports = function(context, width, height) {
   // var fps = 60;
   this.frameCounter = 0;
   this.portalColor = '';
+  this.enemyColor = '';
+  this.enemyColorCounter = -5;
 
   // Drawing loop - draws the whole damn thing, like, infinity times
   this.draw = function() {
@@ -37,13 +40,21 @@ var Renderer = module.exports = function(context, width, height) {
 
     requestAnimationFrame(self.draw);
 
-    if(this.frameCounter % 4 === 0) {
+    if(this.frameCounter % 5 === 0) {
+      this.enemyColorCounter++;
       var colorSeedR = Math.floor(Math.random() * 256);
       var colorSeedG = Math.floor(Math.random() * 256);
       var colorSeedB = Math.floor(Math.random() * 256);
       this.portalColor = 'rgba(' + colorSeedR + ', ' + colorSeedG + ', ' + colorSeedB + ', 1.0)';
+      this.enemyColor = 'rgba(' + Math.floor(254 / (Math.abs(this.enemyColorCounter) + 1)).toString() + 
+                           ', ' + Math.floor(colorSeedG/10).toString() + 
+                           ', ' + Math.floor(colorSeedB/10).toString() + ', 1.0)';
       this.frameCounter = 0;
+      if(this.enemyColorCounter === 5) {
+        this.enemyColorCounter = -5;
+      }
     }
+
 
     this.map.mapArray.forEach(function(row, y) {
       row.forEach(function(tile, x) {
@@ -51,6 +62,8 @@ var Renderer = module.exports = function(context, width, height) {
           self.drawTile("rgba(0, 0, 255, 0.9)", x, y);
         } else if(tile === 5) {
           self.drawTile("rgba(250, 255, 0, 0.9)", x, y);
+        } else if(tile === 6) {
+          self.drawTile(self.enemyColor, x, y);
         } else if(tile === 4) {
           self.drawTile(self.portalColor, x, y);
         } else if(tile === 2) {
@@ -117,7 +130,7 @@ var Renderer = module.exports = function(context, width, height) {
     var origPos = this.map.mapArray[y][x];
     var newPos = this.map.mapArray[y + dy][x + dx];
 
-    if(newPos !== 5 && newPos !== 4) {
+    if(newPos !== 6 && newPos !== 5 && newPos !== 4) {
       this.map.mapArray[y + dy][x + dx] = origPos;
       this.map.mapArray[y][x] = newPos;
     } 

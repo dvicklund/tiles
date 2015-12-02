@@ -86,7 +86,8 @@
 	  // Initialize level map
 	  this.map = new Map(width, height);
 	  this.map.genMap();
-	  this.map.genPortal(0.02);
+	  this.map.genPortal();
+	  this.map.genEnemy();
 	  
 	  // Score.
 	  this.score = 0;
@@ -96,6 +97,8 @@
 	  // var fps = 60;
 	  this.frameCounter = 0;
 	  this.portalColor = '';
+	  this.enemyColor = '';
+	  this.enemyColorCounter = -5;
 
 	  // Drawing loop - draws the whole damn thing, like, infinity times
 	  this.draw = function() {
@@ -111,13 +114,21 @@
 
 	    requestAnimationFrame(self.draw);
 
-	    if(this.frameCounter % 4 === 0) {
+	    if(this.frameCounter % 5 === 0) {
+	      this.enemyColorCounter++;
 	      var colorSeedR = Math.floor(Math.random() * 256);
 	      var colorSeedG = Math.floor(Math.random() * 256);
 	      var colorSeedB = Math.floor(Math.random() * 256);
 	      this.portalColor = 'rgba(' + colorSeedR + ', ' + colorSeedG + ', ' + colorSeedB + ', 1.0)';
+	      this.enemyColor = 'rgba(' + Math.floor(254 / (Math.abs(this.enemyColorCounter) + 1)).toString() + 
+	                           ', ' + Math.floor(colorSeedG/10).toString() + 
+	                           ', ' + Math.floor(colorSeedB/10).toString() + ', 1.0)';
 	      this.frameCounter = 0;
+	      if(this.enemyColorCounter === 5) {
+	        this.enemyColorCounter = -5;
+	      }
 	    }
+
 
 	    this.map.mapArray.forEach(function(row, y) {
 	      row.forEach(function(tile, x) {
@@ -125,6 +136,8 @@
 	          self.drawTile("rgba(0, 0, 255, 0.9)", x, y);
 	        } else if(tile === 5) {
 	          self.drawTile("rgba(250, 255, 0, 0.9)", x, y);
+	        } else if(tile === 6) {
+	          self.drawTile(self.enemyColor, x, y);
 	        } else if(tile === 4) {
 	          self.drawTile(self.portalColor, x, y);
 	        } else if(tile === 2) {
@@ -191,7 +204,7 @@
 	    var origPos = this.map.mapArray[y][x];
 	    var newPos = this.map.mapArray[y + dy][x + dx];
 
-	    if(newPos !== 5 && newPos !== 4) {
+	    if(newPos !== 6 && newPos !== 5 && newPos !== 4) {
 	      this.map.mapArray[y + dy][x + dx] = origPos;
 	      this.map.mapArray[y][x] = newPos;
 	    } 
@@ -214,6 +227,8 @@
 
 	  // Player's current map level
 	  this.level = 0;
+	  this.portalFreq = 0.02;
+	  this.enemyFreq = 0.001;
 
 	  // Initializes this.mapArray
 	  this.genMap = function() {
@@ -238,6 +253,11 @@
 	  // Creates a new map and places the player back at the starting block
 	  this.renewMap = function() {
 	    this.level += 1;
+	    
+	    this.portalFreq = 0.02 - (this.level*0.0005);
+	    if(this.portalFreq < 0.00) this.portalFreq = 0;
+	    this.enemyFreq = 0.001 * this.level;
+	    
 	    this.mapArray = [];
 	    for(var y = 0; y < this.cellsY; y++) {
 	      for(var x = 0; x < this.cellsX; x++) {
@@ -270,7 +290,7 @@
 	        } else if(Math.abs(xPos - x) <= 1 && Math.abs(yPos - y) <= 1) {
 	          this.mapArray[y].push(0);
 	        } else {
-	          this.mapArray[y].push(Math.round(Math.random(1) * 0.7));
+	          this.mapArray[y].push(Math.round(Math.random(1) * 0.68));
 	        }
 	      }
 	    }
@@ -278,29 +298,30 @@
 
 	  // Creates a number of portals relative to input Number (from 0.000 - 1.000)
 	  // Note: Decimals not required but allowed in order to refine extremes of rarity
-	  this.genPortal = function(prob) {
+	  this.genPortal = function() {
 	    var seed;
 	    this.mapArray.forEach(function(row, y, Yarr) {
 	      row.forEach(function(tile, x, Xarr) {
 	        seed = Math.random();
-	        if(seed >= 1 - prob && (tile === 0 || tile === 1)) {
+	        if(seed >= 1 - this.portalFreq && (tile === 0 || tile === 1)) {
 	          Xarr[x] = 4;
 	        }
-	      });
-	    });
+	      }.bind(this));
+	    }.bind(this));
 	  };
 
 	  // Generates enemies based on the input probability Number (0.0 - 1.0)
-	  this.genEnemy = function(prob) {
+	  this.genEnemy = function() {
 	    var enemySeed;
+	    var self = this;
 	    this.mapArray.forEach(function(row, y, Yarr) {
 	      row.forEach(function(tile, x, Xarr) {
 	        enemySeed = Math.random();
-	        if(seed >= 1 - prob && (tile === 0 || tile === 1)) {
+	        if(enemySeed >= 1 - this.enemyFreq && (tile === 0 || tile === 1)) {
 	          Xarr[x] = 6;
 	        }
-	      });
-	    });
+	      }.bind(this));
+	    }.bind(this));
 	  };
 	};
 
@@ -321,14 +342,16 @@
 	  this.checkPos = function() {
 	    if(this.renderer.map.mapArray[this.yPos][this.xPos] === 5) {
 	      this.renderer.map.renewMap();
-	      this.renderer.map.genPortal(0.02);
+	      this.renderer.map.genPortal();
+	      this.renderer.map.genEnemy();
 	      this.renderer.score += 1; 
 	      this.renderer.checkHiScore();
 	      this.xPos = 1;
 	      this.yPos = 1;
 	    } else if(this.renderer.map.mapArray[this.yPos][this.xPos] === 4) {
 	      this.renderer.map.refreshMap(this.xPos, this.yPos);
-	      this.renderer.map.genPortal(0.02);
+	      this.renderer.map.genPortal();
+	      this.renderer.map.genEnemy();
 	      this.renderer.map.mapArray[this.yPos][this.xPos] = 3;
 	    }
 	  };
@@ -381,7 +404,8 @@
 	      this.moveRight();
 	    } else if (keyCode === "r") {
 	      this.renderer.map.renewMap();
-	      this.renderer.map.genPortal(0.02);
+	      this.renderer.map.genPortal();
+	      this.renderer.map.genEnemy();
 	      this.renderer.score = this.renderer.score - 10;
 	      this.xPos = 1;
 	      this.yPos = 1;
