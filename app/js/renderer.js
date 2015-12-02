@@ -18,6 +18,7 @@ var Renderer = module.exports = function(context, width, height) {
   // Score.
   this.score = 0;
   this.highScore = 0;
+  this.lives = 3;
   
   // Drawing variables
   // var fps = 60;
@@ -45,15 +46,13 @@ var Renderer = module.exports = function(context, width, height) {
       var colorSeedR = Math.floor(Math.random() * 256);
       var colorSeedG = Math.floor(Math.random() * 256);
       var colorSeedB = Math.floor(Math.random() * 256);
-    //  this.portalColor = 'rgba(' + colorSeedR + ', ' + colorSeedG + ', ' + colorSeedB + ', 1.0)';
-      this.portalColor = 'rgba(' + colorSeedG + ', ' + colorSeedR + ', ' + colorSeedG + ', 1.0)';
+      this.portalColor = 'rgba(' + colorSeedR + ', ' + colorSeedG + ', ' + colorSeedB + ', 1.0)';
       this.enemyColor = 'rgba(' + Math.floor(254 / (Math.abs(this.enemyColorCounter) + 1)).toString() + ', 0, 0,  1.0)';
       this.frameCounter = 0;
       if(this.enemyColorCounter === 5) {
         this.enemyColorCounter = -5;
       }
     }
-
 
     this.map.mapArray.forEach(function(row, y) {
       row.forEach(function(tile, x) {
@@ -146,7 +145,22 @@ var Renderer = module.exports = function(context, width, height) {
   }.bind(this);
 
   this.gameOver = function() {
-
+    context.fillStyle = "rgba(180, 180, 180, 0.6)";
+    this.map.mapArray.forEach(function(row, y){
+      curr.forEach(function(tile, x) {
+        context.fillRect(
+          x * this.tileX, 
+          y * this.tileY, 
+          this.tileX, 
+          this.tileY
+        );
+      });
+    });
+    
+    context.fillStyle = "black";
+    context.font = "4em serif";
+    context.textAlign = 'center';
+    context.fillText('You are dead,\npoor blue dot.', canvas.width/2, canvas.height/2);
   };
 };
 

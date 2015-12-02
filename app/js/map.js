@@ -1,6 +1,10 @@
+var Entity = require('./entity');
+
 var Map = module.exports = function(cellsX, cellsY) {
   // 2-Dimensional array (after generation) where the map is stored
   this.mapArray = [];
+
+  this.enemyArray = [];
 
   // Number of cells in Y- and X-directions
   this.cellsY = cellsY;
@@ -103,6 +107,7 @@ var Map = module.exports = function(cellsX, cellsY) {
         enemySeed = Math.random();
         if(enemySeed >= 1 - this.enemyFreq && (tile === 0 || tile === 1)) {
           Xarr[x] = 6;
+          this.enemyArray.push(new Entity());
         }
       }.bind(this));
     }.bind(this));
