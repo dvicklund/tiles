@@ -119,10 +119,9 @@
 	      var colorSeedR = Math.floor(Math.random() * 256);
 	      var colorSeedG = Math.floor(Math.random() * 256);
 	      var colorSeedB = Math.floor(Math.random() * 256);
-	      this.portalColor = 'rgba(' + colorSeedR + ', ' + colorSeedG + ', ' + colorSeedB + ', 1.0)';
-	      this.enemyColor = 'rgba(' + Math.floor(254 / (Math.abs(this.enemyColorCounter) + 1)).toString() + 
-	                           ', ' + Math.floor(colorSeedG/10).toString() + 
-	                           ', ' + Math.floor(colorSeedB/10).toString() + ', 1.0)';
+	    //  this.portalColor = 'rgba(' + colorSeedR + ', ' + colorSeedG + ', ' + colorSeedB + ', 1.0)';
+	      this.portalColor = 'rgba(' + colorSeedG + ', ' + colorSeedR + ', ' + colorSeedG + ', 1.0)';
+	      this.enemyColor = 'rgba(' + Math.floor(254 / (Math.abs(this.enemyColorCounter) + 1)).toString() + ', 0, 0,  1.0)';
 	      this.frameCounter = 0;
 	      if(this.enemyColorCounter === 5) {
 	        this.enemyColorCounter = -5;
@@ -150,6 +149,7 @@
 	      });
 	    });
 
+	    this.drawLevel();
 	    this.drawScore();
 	    this.drawHiScore();
 	    this.drawInstructions();
@@ -192,6 +192,15 @@
 	    context.fillText('WASD to Move - R to Restart (And lose 10 points!)', canvas.width / 2, canvas.height - 5);
 	  };
 
+	  this.drawLevel = function() {
+	    var currLevelHexRed = Math.floor(Math.min(this.map.level, 64) / 4).toString(16);
+	    var currLevelHexGreen = Math.floor((64 - Math.min(this.map.level, 64)) / 4).toString(16);
+	    context.fillStyle = "#" + currLevelHexRed + currLevelHexGreen + "0";
+	    context.font = '1.5em sans-serif';
+	    context.textAlign = 'center';
+	    context.fillText('Level ' + this.map.level, canvas.width / 2, 22);
+	  }.bind(this);
+
 	  this.refreshDimensions = function() {
 	    canvas.height = window.innerHeight;
 	    canvas.width = window.innerWidth;
@@ -209,6 +218,10 @@
 	      this.map.mapArray[y][x] = newPos;
 	    } 
 	  }.bind(this);
+
+	  this.gameOver = function() {
+
+	  };
 	};
 
 
@@ -225,10 +238,11 @@
 	  this.cellsY = cellsY;
 	  this.cellsX = cellsX;
 
-	  // Player's current map level
-	  this.level = 0;
+	  // Player's current map level and block frequencies
+	  this.level = 1;
 	  this.portalFreq = 0.02;
-	  this.enemyFreq = 0.001;
+	  this.enemyFreq = 0.0005;
+	  this.wallFreq = 0.75;
 
 	  // Initializes this.mapArray
 	  this.genMap = function() {
@@ -244,20 +258,22 @@
 	        } else if((y >= 1 && y <= 3) && (x >= 1 && x <= 3)) {
 	          this.mapArray[y].push(0);
 	        } else {
-	          this.mapArray[y].push(Math.round(Math.random() * 0.7));
+	          this.mapArray[y].push(Math.round(Math.random() * this.wallFreq));
 	        }
 	      }
 	    }
 	  };
 
+	  // Increases level and calculated difficulty by 1
+	  this.increaseLevel = function() {
+	    this.level += 1;
+	    this.portalFreq -= 0.0002;
+	    if(this.portalFreq < 0) this.portalFreq = 0;
+	    this.enemyFreq += 0.0005;
+	  };
+
 	  // Creates a new map and places the player back at the starting block
 	  this.renewMap = function() {
-	    this.level += 1;
-	    
-	    this.portalFreq = 0.02 - (this.level*0.0005);
-	    if(this.portalFreq < 0.00) this.portalFreq = 0;
-	    this.enemyFreq = 0.001 * this.level;
-	    
 	    this.mapArray = [];
 	    for(var y = 0; y < this.cellsY; y++) {
 	      for(var x = 0; x < this.cellsX; x++) {
@@ -271,7 +287,7 @@
 	        } else if((y >= 1 && y <= 3) && (x >= 1 && x <= 3)) {
 	          this.mapArray[y].push(0);
 	        } else {
-	          this.mapArray[y].push(Math.round(Math.random(1) * 0.7));
+	          this.mapArray[y].push(Math.round(Math.random(1) * this.wallFreq));
 	        }
 	      }
 	    }
@@ -290,7 +306,7 @@
 	        } else if(Math.abs(xPos - x) <= 1 && Math.abs(yPos - y) <= 1) {
 	          this.mapArray[y].push(0);
 	        } else {
-	          this.mapArray[y].push(Math.round(Math.random(1) * 0.68));
+	          this.mapArray[y].push(Math.round(Math.random(1) * this.wallFreq));
 	        }
 	      }
 	    }
@@ -338,9 +354,21 @@
 	  this.renderer = rend;
 	  this.cellsPerSecond = cps || 2;
 	  this.facing = 'right';
+	  this.lives = 3;
+
+	  this.checkLives = function() {
+	    return this.lives;
+	  };
 
 	  this.checkPos = function() {
-	    if(this.renderer.map.mapArray[this.yPos][this.xPos] === 5) {
+	    if(this.renderer.map.mapArray[this.yPos][this.xPos] === 6){
+	      if(this.checkLives()) {
+
+	      } else {
+	        this.renderer.gameOver();
+	      }
+	    } else if(this.renderer.map.mapArray[this.yPos][this.xPos] === 5) {
+	      this.renderer.map.increaseLevel();
 	      this.renderer.map.renewMap();
 	      this.renderer.map.genPortal();
 	      this.renderer.map.genEnemy();

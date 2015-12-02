@@ -6,10 +6,11 @@ var Map = module.exports = function(cellsX, cellsY) {
   this.cellsY = cellsY;
   this.cellsX = cellsX;
 
-  // Player's current map level
-  this.level = 0;
+  // Player's current map level and block frequencies
+  this.level = 1;
   this.portalFreq = 0.02;
-  this.enemyFreq = 0.001;
+  this.enemyFreq = 0.0005;
+  this.wallFreq = 0.75;
 
   // Initializes this.mapArray
   this.genMap = function() {
@@ -25,20 +26,22 @@ var Map = module.exports = function(cellsX, cellsY) {
         } else if((y >= 1 && y <= 3) && (x >= 1 && x <= 3)) {
           this.mapArray[y].push(0);
         } else {
-          this.mapArray[y].push(Math.round(Math.random() * 0.7));
+          this.mapArray[y].push(Math.round(Math.random() * this.wallFreq));
         }
       }
     }
   };
 
+  // Increases level and calculated difficulty by 1
+  this.increaseLevel = function() {
+    this.level += 1;
+    this.portalFreq -= 0.0002;
+    if(this.portalFreq < 0) this.portalFreq = 0;
+    this.enemyFreq += 0.0005;
+  };
+
   // Creates a new map and places the player back at the starting block
   this.renewMap = function() {
-    this.level += 1;
-    
-    this.portalFreq = 0.02 - (this.level*0.0005);
-    if(this.portalFreq < 0.00) this.portalFreq = 0;
-    this.enemyFreq = 0.001 * this.level;
-    
     this.mapArray = [];
     for(var y = 0; y < this.cellsY; y++) {
       for(var x = 0; x < this.cellsX; x++) {
@@ -52,7 +55,7 @@ var Map = module.exports = function(cellsX, cellsY) {
         } else if((y >= 1 && y <= 3) && (x >= 1 && x <= 3)) {
           this.mapArray[y].push(0);
         } else {
-          this.mapArray[y].push(Math.round(Math.random(1) * 0.7));
+          this.mapArray[y].push(Math.round(Math.random(1) * this.wallFreq));
         }
       }
     }
@@ -71,7 +74,7 @@ var Map = module.exports = function(cellsX, cellsY) {
         } else if(Math.abs(xPos - x) <= 1 && Math.abs(yPos - y) <= 1) {
           this.mapArray[y].push(0);
         } else {
-          this.mapArray[y].push(Math.round(Math.random(1) * 0.68));
+          this.mapArray[y].push(Math.round(Math.random(1) * this.wallFreq));
         }
       }
     }

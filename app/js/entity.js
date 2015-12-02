@@ -5,9 +5,21 @@ var Entity = module.exports = function(rend, cont, xPos, yPos, cps) {
   this.renderer = rend;
   this.cellsPerSecond = cps || 2;
   this.facing = 'right';
+  this.lives = 3;
+
+  this.checkLives = function() {
+    return this.lives;
+  };
 
   this.checkPos = function() {
-    if(this.renderer.map.mapArray[this.yPos][this.xPos] === 5) {
+    if(this.renderer.map.mapArray[this.yPos][this.xPos] === 6){
+      if(this.checkLives()) {
+
+      } else {
+        this.renderer.gameOver();
+      }
+    } else if(this.renderer.map.mapArray[this.yPos][this.xPos] === 5) {
+      this.renderer.map.increaseLevel();
       this.renderer.map.renewMap();
       this.renderer.map.genPortal();
       this.renderer.map.genEnemy();

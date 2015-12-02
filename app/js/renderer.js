@@ -45,10 +45,9 @@ var Renderer = module.exports = function(context, width, height) {
       var colorSeedR = Math.floor(Math.random() * 256);
       var colorSeedG = Math.floor(Math.random() * 256);
       var colorSeedB = Math.floor(Math.random() * 256);
-      this.portalColor = 'rgba(' + colorSeedR + ', ' + colorSeedG + ', ' + colorSeedB + ', 1.0)';
-      this.enemyColor = 'rgba(' + Math.floor(254 / (Math.abs(this.enemyColorCounter) + 1)).toString() + 
-                           ', ' + Math.floor(colorSeedG/10).toString() + 
-                           ', ' + Math.floor(colorSeedB/10).toString() + ', 1.0)';
+    //  this.portalColor = 'rgba(' + colorSeedR + ', ' + colorSeedG + ', ' + colorSeedB + ', 1.0)';
+      this.portalColor = 'rgba(' + colorSeedG + ', ' + colorSeedR + ', ' + colorSeedG + ', 1.0)';
+      this.enemyColor = 'rgba(' + Math.floor(254 / (Math.abs(this.enemyColorCounter) + 1)).toString() + ', 0, 0,  1.0)';
       this.frameCounter = 0;
       if(this.enemyColorCounter === 5) {
         this.enemyColorCounter = -5;
@@ -76,6 +75,7 @@ var Renderer = module.exports = function(context, width, height) {
       });
     });
 
+    this.drawLevel();
     this.drawScore();
     this.drawHiScore();
     this.drawInstructions();
@@ -118,6 +118,15 @@ var Renderer = module.exports = function(context, width, height) {
     context.fillText('WASD to Move - R to Restart (And lose 10 points!)', canvas.width / 2, canvas.height - 5);
   };
 
+  this.drawLevel = function() {
+    var currLevelHexRed = Math.floor(Math.min(this.map.level, 64) / 4).toString(16);
+    var currLevelHexGreen = Math.floor((64 - Math.min(this.map.level, 64)) / 4).toString(16);
+    context.fillStyle = "#" + currLevelHexRed + currLevelHexGreen + "0";
+    context.font = '1.5em sans-serif';
+    context.textAlign = 'center';
+    context.fillText('Level ' + this.map.level, canvas.width / 2, 22);
+  }.bind(this);
+
   this.refreshDimensions = function() {
     canvas.height = window.innerHeight;
     canvas.width = window.innerWidth;
@@ -135,5 +144,9 @@ var Renderer = module.exports = function(context, width, height) {
       this.map.mapArray[y][x] = newPos;
     } 
   }.bind(this);
+
+  this.gameOver = function() {
+
+  };
 };
 
