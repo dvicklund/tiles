@@ -99,6 +99,8 @@
 
 	  // Drawing loop - draws the whole damn thing, like, infinity times
 	  this.draw = function() {
+	    var self = this;
+
 	    // Increment frameCounter
 	    this.frameCounter++;
 
@@ -106,7 +108,7 @@
 	    // setTimeout(function() {
 	        
 	    context.clearRect(0, 0, canvas.width, canvas.height);
-	    var self = this;
+
 	    requestAnimationFrame(self.draw);
 
 	    if(this.frameCounter % 4 === 0) {
@@ -158,14 +160,14 @@
 
 	  this.drawScore = function() {
 	    context.fillStyle = "rgba(20, 255, 255, 0.9)";
-	    context.font = '2em serif';
+	    context.font = '1.5em serif';
 	    context.textAlign = 'left';
 	    context.fillText('Score: ' + this.score, 20, canvas.height - 5 );
 	  };
 
 	  this.drawHiScore = function() {
 	    context.fillStyle = "rgba(255, 255, 140, 0.9)";
-	    context.font = '2em serif';
+	    context.font = '1.5em serif';
 	    context.textAlign = 'right';
 	    context.fillText('High Score: ' + this.highScore, canvas.width - 20, canvas.height - 5);
 	  };
@@ -308,11 +310,13 @@
 /* 3 */
 /***/ function(module, exports) {
 
-	var Entity = module.exports = function(rend, cont, xPos, yPos) {
+	var Entity = module.exports = function(rend, cont, xPos, yPos, cps) {
 	  this.xPos = xPos || 1;
 	  this.yPos = yPos || 1;
 	  this.controllable = cont;
 	  this.renderer = rend;
+	  this.cellsPerSecond = cps || 2;
+	  this.facing = 'right';
 
 	  this.checkPos = function() {
 	    if(this.renderer.map.mapArray[this.yPos][this.xPos] === 5) {
@@ -331,6 +335,7 @@
 
 	  this.moveUp = function() {
 	    if(this.yPos - 1 > 0 && this.renderer.map.mapArray[this.yPos-1][this.xPos] !== 1) {
+	      this.facing = 'up';
 	      this.renderer.moveEntity(this.xPos, this.yPos, 0, -1);
 	      this.yPos--;
 	      this.checkPos();
@@ -339,6 +344,7 @@
 
 	  this.moveDown = function() {
 	    if(this.yPos + 1 < this.renderer.height - 1 && this.renderer.map.mapArray[this.yPos+1][this.xPos] !== 1) {
+	      this.facing = 'down';
 	      this.renderer.moveEntity(this.xPos, this.yPos, 0, 1);
 	      this.yPos++;
 	      this.checkPos();
@@ -347,6 +353,7 @@
 
 	  this.moveRight = function() {
 	    if(this.xPos+1 < this.renderer.width - 1 && this.renderer.map.mapArray[this.yPos][this.xPos+1] !== 1) {
+	      this.facing = 'right';
 	      this.renderer.moveEntity(this.xPos, this.yPos, 1, 0);
 	      this.xPos++;
 	      this.checkPos();
@@ -355,6 +362,7 @@
 
 	  this.moveLeft = function() {
 	    if(this.xPos-1 > 0 && this.renderer.map.mapArray[this.yPos][this.xPos-1] !== 1) {
+	      this.facing = 'left';
 	      this.renderer.moveEntity(this.xPos, this.yPos, -1, 0);
 	      this.xPos--;
 	      this.checkPos();

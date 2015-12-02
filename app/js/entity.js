@@ -1,8 +1,10 @@
-var Entity = module.exports = function(rend, cont, xPos, yPos) {
+var Entity = module.exports = function(rend, cont, xPos, yPos, cps) {
   this.xPos = xPos || 1;
   this.yPos = yPos || 1;
   this.controllable = cont;
   this.renderer = rend;
+  this.cellsPerSecond = cps || 2;
+  this.facing = 'right';
 
   this.checkPos = function() {
     if(this.renderer.map.mapArray[this.yPos][this.xPos] === 5) {
@@ -21,6 +23,7 @@ var Entity = module.exports = function(rend, cont, xPos, yPos) {
 
   this.moveUp = function() {
     if(this.yPos - 1 > 0 && this.renderer.map.mapArray[this.yPos-1][this.xPos] !== 1) {
+      this.facing = 'up';
       this.renderer.moveEntity(this.xPos, this.yPos, 0, -1);
       this.yPos--;
       this.checkPos();
@@ -29,6 +32,7 @@ var Entity = module.exports = function(rend, cont, xPos, yPos) {
 
   this.moveDown = function() {
     if(this.yPos + 1 < this.renderer.height - 1 && this.renderer.map.mapArray[this.yPos+1][this.xPos] !== 1) {
+      this.facing = 'down';
       this.renderer.moveEntity(this.xPos, this.yPos, 0, 1);
       this.yPos++;
       this.checkPos();
@@ -37,6 +41,7 @@ var Entity = module.exports = function(rend, cont, xPos, yPos) {
 
   this.moveRight = function() {
     if(this.xPos+1 < this.renderer.width - 1 && this.renderer.map.mapArray[this.yPos][this.xPos+1] !== 1) {
+      this.facing = 'right';
       this.renderer.moveEntity(this.xPos, this.yPos, 1, 0);
       this.xPos++;
       this.checkPos();
@@ -45,6 +50,7 @@ var Entity = module.exports = function(rend, cont, xPos, yPos) {
 
   this.moveLeft = function() {
     if(this.xPos-1 > 0 && this.renderer.map.mapArray[this.yPos][this.xPos-1] !== 1) {
+      this.facing = 'left';
       this.renderer.moveEntity(this.xPos, this.yPos, -1, 0);
       this.xPos--;
       this.checkPos();

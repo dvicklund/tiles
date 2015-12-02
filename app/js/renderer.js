@@ -25,6 +25,8 @@ var Renderer = module.exports = function(context, width, height) {
 
   // Drawing loop - draws the whole damn thing, like, infinity times
   this.draw = function() {
+    var self = this;
+
     // Increment frameCounter
     this.frameCounter++;
 
@@ -32,7 +34,7 @@ var Renderer = module.exports = function(context, width, height) {
     // setTimeout(function() {
         
     context.clearRect(0, 0, canvas.width, canvas.height);
-    var self = this;
+
     requestAnimationFrame(self.draw);
 
     if(this.frameCounter % 4 === 0) {
@@ -84,14 +86,14 @@ var Renderer = module.exports = function(context, width, height) {
 
   this.drawScore = function() {
     context.fillStyle = "rgba(20, 255, 255, 0.9)";
-    context.font = '2em serif';
+    context.font = '1.5em serif';
     context.textAlign = 'left';
     context.fillText('Score: ' + this.score, 20, canvas.height - 5 );
   };
 
   this.drawHiScore = function() {
     context.fillStyle = "rgba(255, 255, 140, 0.9)";
-    context.font = '2em serif';
+    context.font = '1.5em serif';
     context.textAlign = 'right';
     context.fillText('High Score: ' + this.highScore, canvas.width - 20, canvas.height - 5);
   };
