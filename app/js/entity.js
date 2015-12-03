@@ -5,16 +5,16 @@ var Entity = module.exports = function(rend, cont, xPos, yPos, cps) {
   this.renderer = rend;
   this.cellsPerSecond = cps || 2;
   this.facing = 'right';
-  this.lives = 3;
-
-  this.checkLives = function() {
-    return this.lives;
-  };
 
   this.checkPos = function() {
-    if(this.renderer.map.mapArray[this.yPos][this.xPos] === 6){
-      if(this.checkLives()) {
-
+    if(this.renderer.map.mapArray[this.yPos][this.xPos] === 6 && this.controllable === true){
+      if(this.renderer.lives > 0) {
+        this.renderer.lives--;
+        this.renderer.map.renewMap();
+        this.renderer.map.genPortal();
+        this.renderer.map.genEnemy();
+        this.xPos = 1;
+        this.yPos = 1;
       } else {
         this.renderer.gameOver();
       }
@@ -85,7 +85,7 @@ var Entity = module.exports = function(rend, cont, xPos, yPos, cps) {
       this.renderer.map.renewMap();
       this.renderer.map.genPortal();
       this.renderer.map.genEnemy();
-      this.renderer.score = this.renderer.score - 10;
+      this.renderer.score = this.renderer.score - 1;
       this.xPos = 1;
       this.yPos = 1;
     }

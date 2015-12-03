@@ -31,54 +31,59 @@ var Renderer = module.exports = function(context, width, height) {
   this.draw = function() {
     var self = this;
 
-    // Increment frameCounter
-    this.frameCounter++;
+    if(this.lives > 0) {
+      // Increment frameCounter
+      this.frameCounter++;
 
-    // v Redundant fps limiter since requestAnimationFrame is now operational
-    // setTimeout(function() {
-        
-    context.clearRect(0, 0, canvas.width, canvas.height);
+      // v Redundant fps limiter since requestAnimationFrame is now operational
+      // setTimeout(function() {
+          
+      context.clearRect(0, 0, canvas.width, canvas.height);
 
-    requestAnimationFrame(self.draw);
+      requestAnimationFrame(self.draw);
 
-    if(this.frameCounter % 5 === 0) {
-      this.enemyColorCounter++;
-      var colorSeedR = Math.floor(Math.random() * 256);
-      var colorSeedG = Math.floor(Math.random() * 256);
-      var colorSeedB = Math.floor(Math.random() * 256);
-      this.portalColor = 'rgba(' + colorSeedR + ', ' + colorSeedG + ', ' + colorSeedB + ', 1.0)';
-      this.enemyColor = 'rgba(' + Math.floor(254 / (Math.abs(this.enemyColorCounter) + 1)).toString() + ', 0, 0,  1.0)';
-      this.frameCounter = 0;
-      if(this.enemyColorCounter === 5) {
-        this.enemyColorCounter = -5;
-      }
-    }
-
-    this.map.mapArray.forEach(function(row, y) {
-      row.forEach(function(tile, x) {
-        if(tile === 3) {
-          self.drawTile("rgba(0, 0, 255, 0.9)", x, y);
-        } else if(tile === 5) {
-          self.drawTile("rgba(250, 255, 0, 0.9)", x, y);
-        } else if(tile === 6) {
-          self.drawTile(self.enemyColor, x, y);
-        } else if(tile === 4) {
-          self.drawTile(self.portalColor, x, y);
-        } else if(tile === 2) {
-          self.drawTile("rgba(150, 70, 70, 0.9)", x, y);
-        } else if(tile === 1) {
-          self.drawTile("rgba(0, 0, 0, 0.8)", x, y);
-        } else {
-          self.drawTile("rgba(15, 200, 35, 0.8)", x, y);
+      if(this.frameCounter % 5 === 0) {
+        this.enemyColorCounter++;
+        var colorSeedR = Math.floor(Math.random() * 256);
+        var colorSeedG = Math.floor(Math.random() * 256);
+        var colorSeedB = Math.floor(Math.random() * 256);
+        this.portalColor = 'rgba(' + colorSeedR + ', ' + colorSeedG + ', ' + colorSeedB + ', 1.0)';
+        this.enemyColor = 'rgba(' + Math.floor(254 / (Math.abs(this.enemyColorCounter) + 1)).toString() + ', 0, 0,  1.0)';
+        this.frameCounter = 0;
+        if(this.enemyColorCounter === 5) {
+          this.enemyColorCounter = -5;
         }
-      });
-    });
+      }
 
-    this.drawLevel();
-    this.drawScore();
-    this.drawHiScore();
-    this.drawInstructions();
-    // }.bind(this), 1000 / fps);
+      this.map.mapArray.forEach(function(row, y) {
+        row.forEach(function(tile, x) {
+          if(tile === 3) {
+            self.drawTile("rgba(0, 0, 255, 0.9)", x, y);
+          } else if(tile === 5) {
+            self.drawTile("rgba(250, 255, 0, 0.9)", x, y);
+          } else if(tile === 6) {
+            self.drawTile(self.enemyColor, x, y);
+          } else if(tile === 4) {
+            self.drawTile(self.portalColor, x, y);
+          } else if(tile === 2) {
+            self.drawTile("rgba(150, 70, 70, 0.9)", x, y);
+          } else if(tile === 1) {
+            self.drawTile("rgba(0, 0, 0, 0.8)", x, y);
+          } else {
+            self.drawTile("rgba(15, 200, 35, 0.8)", x, y);
+          }
+        });
+      });
+
+      this.drawLevel();
+      this.drawLives();
+      this.drawScore();
+      this.drawHiScore();
+      this.drawInstructions();
+      // }.bind(this), 1000 / fps);
+    } else {
+      this.gameOver();
+    }
   }.bind(this);
 
   this.drawTile = function(color, x, y) {
@@ -121,10 +126,17 @@ var Renderer = module.exports = function(context, width, height) {
     var currLevelHexRed = Math.floor(Math.min(this.map.level, 64) / 4).toString(16);
     var currLevelHexGreen = Math.floor((64 - Math.min(this.map.level, 64)) / 4).toString(16);
     context.fillStyle = "#" + currLevelHexRed + currLevelHexGreen + "0";
-    context.font = '1.5em sans-serif';
+    context.font = '1.5em serif';
     context.textAlign = 'center';
     context.fillText('Level ' + this.map.level, canvas.width / 2, 22);
   }.bind(this);
+
+  this.drawLives = function() {
+    context.fillStyle = '#fff';
+    context.font = '1.2em serif';
+    context.textAlign = 'left';
+    context.fillText('Lives: ' + this.lives, 20, 22);
+  };
 
   this.refreshDimensions = function() {
     canvas.height = window.innerHeight;
@@ -146,19 +158,10 @@ var Renderer = module.exports = function(context, width, height) {
 
   this.gameOver = function() {
     context.fillStyle = "rgba(180, 180, 180, 0.6)";
-    this.map.mapArray.forEach(function(row, y){
-      curr.forEach(function(tile, x) {
-        context.fillRect(
-          x * this.tileX, 
-          y * this.tileY, 
-          this.tileX, 
-          this.tileY
-        );
-      });
-    });
+    context.fillRect(0, 0, canvas.width, canvas.height);
     
-    context.fillStyle = "black";
-    context.font = "4em serif";
+    context.fillStyle = "blue";
+    context.font = "3em serif";
     context.textAlign = 'center';
     context.fillText('You are dead,\npoor blue dot.', canvas.width/2, canvas.height/2);
   };

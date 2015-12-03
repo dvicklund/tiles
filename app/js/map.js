@@ -101,13 +101,15 @@ var Map = module.exports = function(cellsX, cellsY) {
   // Generates enemies based on the input probability Number (0.0 - 1.0)
   this.genEnemy = function() {
     var enemySeed;
+    var enemyName;
     var self = this;
     this.mapArray.forEach(function(row, y, Yarr) {
       row.forEach(function(tile, x, Xarr) {
         enemySeed = Math.random();
         if(enemySeed >= 1 - this.enemyFreq && (tile === 0 || tile === 1)) {
           Xarr[x] = 6;
-          this.enemyArray.push(new Entity());
+          enemyName = "enemy" + x + y;
+          this.enemyArray.push(new Entity(this, false, x, y));
         }
       }.bind(this));
     }.bind(this));
