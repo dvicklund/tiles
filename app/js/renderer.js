@@ -161,7 +161,7 @@ var Renderer = module.exports = function(context, width, height) {
   }.bind(this);
 
   this.gameOver = function() {
-    context.fillStyle = "rgba(180, 180, 180, 0.6)";
+    context.fillStyle = "rgba(180, 180, 180, 0.8)";
     context.fillRect(0, 0, canvas.width, canvas.height);
     
     context.fillStyle = "blue";

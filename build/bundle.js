@@ -193,7 +193,7 @@
 	    context.fillStyle = "rgba(180, 180, 180, 0.6)";
 	    context.font = '1.2em sans-serif';
 	    context.textAlign = 'center';
-	    context.fillText('WASD to Move - R to Restart (And lose 10 points!)', canvas.width / 2, canvas.height - 5);
+	    context.fillText('WASD to Move - R to Restart (And lose a point!)', canvas.width / 2, canvas.height - 5);
 	  };
 
 	  this.drawLevel = function() {
@@ -235,13 +235,14 @@
 	  }.bind(this);
 
 	  this.gameOver = function() {
-	    context.fillStyle = "rgba(180, 180, 180, 0.6)";
+	    context.fillStyle = "rgba(180, 180, 180, 0.8)";
 	    context.fillRect(0, 0, canvas.width, canvas.height);
 	    
 	    context.fillStyle = "blue";
 	    context.font = "3em serif";
 	    context.textAlign = 'center';
 	    context.fillText('You are dead,\npoor blue dot.', canvas.width/2, canvas.height/2);
+	    
 	  };
 	};
 
