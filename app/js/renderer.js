@@ -119,7 +119,7 @@ var Renderer = module.exports = function(context, width, height) {
     context.fillStyle = "rgba(180, 180, 180, 0.6)";
     context.font = '1.2em sans-serif';
     context.textAlign = 'center';
-    context.fillText('WASD to Move - R to Restart (And lose 10 points!)', canvas.width / 2, canvas.height - 5);
+    context.fillText('WASD to Move - R to Restart (And lose a point!)', canvas.width / 2, canvas.height - 5);
   };
 
   this.drawLevel = function() {
@@ -132,10 +132,14 @@ var Renderer = module.exports = function(context, width, height) {
   }.bind(this);
 
   this.drawLives = function() {
-    context.fillStyle = '#fff';
-    context.font = '1.2em serif';
-    context.textAlign = 'left';
-    context.fillText('Lives: ' + this.lives, 20, 22);
+    for(var i = 0; i < this.lives; i++) {
+      console.log(i * this.tileX);
+      this.drawTile('blue', i * 2 + 1, 0);
+    }
+    // context.fillStyle = '#fff';
+    // context.font = '1.2em serif';
+    // context.textAlign = 'left';
+    // context.fillText('Lives: ' + this.lives, 20, 22);
   };
 
   this.refreshDimensions = function() {
@@ -164,6 +168,7 @@ var Renderer = module.exports = function(context, width, height) {
     context.font = "3em serif";
     context.textAlign = 'center';
     context.fillText('You are dead,\npoor blue dot.', canvas.width/2, canvas.height/2);
+    
   };
 };
 

@@ -206,10 +206,14 @@
 	  }.bind(this);
 
 	  this.drawLives = function() {
-	    context.fillStyle = '#fff';
-	    context.font = '1.2em serif';
-	    context.textAlign = 'left';
-	    context.fillText('Lives: ' + this.lives, 20, 22);
+	    for(var i = 0; i < this.lives; i++) {
+	      console.log(i * this.tileX);
+	      this.drawTile('blue', i * 2 + 1, 0);
+	    }
+	    // context.fillStyle = '#fff';
+	    // context.font = '1.2em serif';
+	    // context.textAlign = 'left';
+	    // context.fillText('Lives: ' + this.lives, 20, 22);
 	  };
 
 	  this.refreshDimensions = function() {
