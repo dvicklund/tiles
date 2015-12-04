@@ -18,5 +18,11 @@ var Player = new Entity(Render, true);
 window.addEventListener('resize', Render.refreshDimensions, false);
 window.addEventListener('keypress', Player.keyPressed, false);
 
+// Experimental touch listeners
+
+canvas.addEventListener("touchstart", Player.screenTouched, false);
+canvas.addEventListener("touchend", Player.screenReleased, false);
+
+
 // Initialize infinite drawing loop
 Render.draw();

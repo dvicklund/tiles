@@ -4,25 +4,30 @@ var Renderer = module.exports = function(context, width, height) {
   // Map dimensions number of tiles
   this.width = width;
   this.height = height;
-  
+
   // Tile dimensions by pixel
   this.tileX = canvas.width / width; 
   this.tileY = canvas.height / height;
   
+  // Screen ratio
+  this.screenRatio = canvas.width / canvas.height;
+
   // Initialize level map
   this.map = new Map(width, height);
   this.map.genMap();
   this.map.genPortal();
   this.map.genEnemy();
+  this.map.genPoints();
   
   // Score.
   this.score = 0;
   this.highScore = 0;
-  this.lives = 3;
+  this.lives = 5;
   
   // Drawing variables
   // var fps = 60;
   this.frameCounter = 0;
+  this.pointColor = '';
   this.portalColor = '';
   this.enemyColor = '';
   this.enemyColorCounter = -5;
@@ -47,6 +52,7 @@ var Renderer = module.exports = function(context, width, height) {
         var colorSeedR = Math.floor(Math.random() * 256);
         var colorSeedG = Math.floor(Math.random() * 256);
         var colorSeedB = Math.floor(Math.random() * 256);
+        this.pointColor = 'rgba(0, ' + colorSeedR + ', ' + colorSeedR + ', 1.0)';
         this.portalColor = 'rgba(' + colorSeedR + ', ' + colorSeedG + ', ' + colorSeedB + ', 1.0)';
         this.enemyColor = 'rgba(' + Math.floor(254 / (Math.abs(this.enemyColorCounter) + 1)).toString() + ', 0, 0,  1.0)';
         this.frameCounter = 0;
@@ -69,6 +75,9 @@ var Renderer = module.exports = function(context, width, height) {
             self.drawTile("rgba(150, 70, 70, 0.9)", x, y);
           } else if(tile === 1) {
             self.drawTile("rgba(0, 0, 0, 0.8)", x, y);
+          } else if(Array.isArray(tile)) {
+            self.drawTile("rgba(15, 200, 35, 0.8)", x, y);
+            self.drawSmallTile(self.pointColor, x, y);
           } else {
             self.drawTile("rgba(15, 200, 35, 0.8)", x, y);
           }
@@ -94,6 +103,14 @@ var Renderer = module.exports = function(context, width, height) {
     );
   };
 
+  this.drawSmallTile = function(color, x, y) {
+    context.fillStyle = color;
+    context.fillRect(
+      (x + 0.4) * this.tileX, (y + 0.4) * this.tileY,
+      this.tileX/5, this.tileY/5
+    );
+  };
+
   this.checkHiScore = function() {
     if(this.score > this.highScore) {
       this.highScore = this.score;
@@ -116,10 +133,10 @@ var Renderer = module.exports = function(context, width, height) {
   };
 
   this.drawInstructions = function() {
-    context.fillStyle = "rgba(180, 180, 180, 0.6)";
+    context.fillStyle = "rgba(180, 180, 180, 0.7)";
     context.font = '1.2em sans-serif';
     context.textAlign = 'center';
-    context.fillText('WASD to Move - R to Restart (And lose a point!)', canvas.width / 2, canvas.height - 5);
+    context.fillText('WASD to Move - R to Restart (Lose a Life)', canvas.width / 2, canvas.height - 5);
   };
 
   this.drawLevel = function() {
@@ -133,13 +150,8 @@ var Renderer = module.exports = function(context, width, height) {
 
   this.drawLives = function() {
     for(var i = 0; i < this.lives; i++) {
-      console.log(i * this.tileX);
       this.drawTile('blue', i * 2 + 1, 0);
     }
-    // context.fillStyle = '#fff';
-    // context.font = '1.2em serif';
-    // context.textAlign = 'left';
-    // context.fillText('Lives: ' + this.lives, 20, 22);
   };
 
   this.refreshDimensions = function() {
@@ -154,10 +166,15 @@ var Renderer = module.exports = function(context, width, height) {
     var origPos = this.map.mapArray[y][x];
     var newPos = this.map.mapArray[y + dy][x + dx];
 
-    if(newPos !== 6 && newPos !== 5 && newPos !== 4) {
+    if(!Array.isArray(newPos) && newPos !== 6 && newPos !== 5 && newPos !== 4) {
       this.map.mapArray[y + dy][x + dx] = origPos;
       this.map.mapArray[y][x] = newPos;
-    } 
+    } else if(Array.isArray(newPos)) {
+      this.map.mapArray[y + dy][x + dx] = origPos;
+      this.map.mapArray[y][x] = 0;
+      this.score += 1;
+      this.checkHiScore();
+    }
   }.bind(this);
 
   this.gameOver = function() {
@@ -168,7 +185,26 @@ var Renderer = module.exports = function(context, width, height) {
     context.font = "3em serif";
     context.textAlign = 'center';
     context.fillText('You are dead,\npoor blue dot.', canvas.width/2, canvas.height/2);
-    
+    context.font = '1.5em serif';
+    context.fillText('Press R to Restart', canvas.width/2, canvas.height/2 + 30);
+
+    this.keyPress = function(e) {
+      var keyCode = String.fromCharCode(e.keyCode);
+      if (keyCode === "r") {
+        this.map.renewMap();
+        this.map.genPortal();
+        this.map.genEnemy();
+        this.map.genPoints();
+        this.score = 0;
+        this.xPos = 1;
+        this.yPos = 1;
+        this.lives += 5;
+        window.removeEventListener('keypress', this.keyPress, false);
+        this.draw();
+      }
+    }.bind(this);
+  
+    window.addEventListener('keypress', this.keyPress, false);
   };
 };
 

@@ -114,5 +114,17 @@ var Map = module.exports = function(cellsX, cellsY) {
       }.bind(this));
     }.bind(this));
   };
+
+  this.genPoints = function() {
+    var seed;
+    this.mapArray.forEach(function(row, y, Yarr) {
+      row.forEach(function(tile, x, Xarr) {
+        seed = Math.random();
+        if(seed >= 0.85 && tile === 0) {
+          Xarr[x] = [0, 7];
+        }
+      }.bind(this));
+    }.bind(this));
+  };
 };
 

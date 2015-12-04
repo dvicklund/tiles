@@ -13,6 +13,7 @@ var Entity = module.exports = function(rend, cont, xPos, yPos, cps) {
         this.renderer.map.renewMap();
         this.renderer.map.genPortal();
         this.renderer.map.genEnemy();
+        this.renderer.map.genPoints();
         this.xPos = 1;
         this.yPos = 1;
       } else {
@@ -23,7 +24,8 @@ var Entity = module.exports = function(rend, cont, xPos, yPos, cps) {
       this.renderer.map.renewMap();
       this.renderer.map.genPortal();
       this.renderer.map.genEnemy();
-      this.renderer.score += 1; 
+      this.renderer.map.genPoints();
+      this.renderer.score += 5; 
       this.renderer.checkHiScore();
       this.xPos = 1;
       this.yPos = 1;
@@ -31,6 +33,7 @@ var Entity = module.exports = function(rend, cont, xPos, yPos, cps) {
       this.renderer.map.refreshMap(this.xPos, this.yPos);
       this.renderer.map.genPortal();
       this.renderer.map.genEnemy();
+      this.renderer.map.genPoints();
       this.renderer.map.mapArray[this.yPos][this.xPos] = 3;
     }
   };
@@ -85,10 +88,31 @@ var Entity = module.exports = function(rend, cont, xPos, yPos, cps) {
       this.renderer.map.renewMap();
       this.renderer.map.genPortal();
       this.renderer.map.genEnemy();
-      this.renderer.score = this.renderer.score - 1;
+      this.renderer.map.genPoints();
+      this.renderer.lives--;
       this.xPos = 1;
       this.yPos = 1;
     }
   }.bind(this);
+
+  this.screenTouched = function(e) {
+    e.preventDefault();
+    var x = e.changedTouches[0].pageX;
+    var y = e.changedTouches[0].pageY;
+
+    if((y / x) > this.renderer.screenRatio && ((y - canvas.width) / x) < -this.renderer.screenRatio) {
+      this.moveRight();
+    } else if ((y / x) < this.renderer.screenRatio && ((y - canvas.width) / x) > -this.renderer.screenRatio) {
+      this.moveLeft();
+    } else if ((y / x) > this.renderer.screenRatio && ((y - canvas.width) / x) > -this.renderer.screenRatio) {
+      this.moveDown();
+    } else if ((y / x) < this.renderer.screenRatio && ((y - canvas.width) / x) < -this.renderer.screenRatio) {
+      this.moveUp();
+    }
+  }.bind(this);
+
+  this.screenReleased = function(e) {
+    e.preventDefault();
+  };
 };
 
