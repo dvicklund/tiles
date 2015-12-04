@@ -531,14 +531,16 @@
 	    e.preventDefault();
 	    var x = e.changedTouches[0].pageX;
 	    var y = e.changedTouches[0].pageY;
+	    var ratio = this.renderer.screenRatio;
 
-	    if((y / x) > this.renderer.screenRatio && ((y - canvas.width) / x) < -this.renderer.screenRatio) {
+
+	    if((x / y) > ratio && ((x - canvas.width) / y) > -ratio) {
 	      this.moveRight();
-	    } else if ((y / x) < this.renderer.screenRatio && ((y - canvas.width) / x) > -this.renderer.screenRatio) {
+	    } else if ((x / y) < ratio && ((x - canvas.width) / y) < -ratio) {
 	      this.moveLeft();
-	    } else if ((y / x) > this.renderer.screenRatio && ((y - canvas.width) / x) > -this.renderer.screenRatio) {
+	    } else if ((x / y) < ratio && ((x - canvas.width) / y) > -ratio) {
 	      this.moveDown();
-	    } else if ((y / x) < this.renderer.screenRatio && ((y - canvas.width) / x) < -this.renderer.screenRatio) {
+	    } else if ((x / y) > ratio && ((x - canvas.width) / y) < -ratio) {
 	      this.moveUp();
 	    }
 	  }.bind(this);
