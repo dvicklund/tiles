@@ -19,6 +19,7 @@ var Entity = module.exports = function(rend, cont, xPos, yPos, cps) {
       this.renderer.levelUp();
       this.setPos(1, 1);
     } else if(this.renderer.map.mapArray[this.yPos][this.xPos] === 4) {
+      this.renderer.portalSound.play();
       this.renderer.map.refresh(this.xPos, this.yPos);
     }
   };

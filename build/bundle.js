@@ -106,6 +106,14 @@
 	  this.highScore = 0;
 	  this.lives = 3;
 	  
+	  // Sound variables
+	  this.gameOverSound = new Audio('sound/gameOver.mp3');
+	  this.lastSecondSound = new Audio('sound/lastSecond.mp3');
+	  this.outOfTimeSound = new Audio('sound/outOfTime.mp3');
+	  this.pointSound = new Audio('sound/point.mp3');
+	  this.portalSound = new Audio('sound/portal.mp3');
+	  this.winSound = new Audio('sound/win.mp3');
+
 	  // Drawing variables
 	  // var fps = 60;
 	  this.frameCounter = 0;
@@ -260,12 +268,13 @@
 	  };
 
 	  this.levelUp = function() {
-	      this.map.increaseLevel();
-	      this.map.renew();
-	      this.score += 5; 
-	      this.checkHiScore();
-	      this.clockTime = this.initialTime;
-	      this.startTime = Date.now();
+	    this.winSound.play();
+	    this.map.increaseLevel();
+	    this.map.renew();
+	    this.score += 5; 
+	    this.checkHiScore();
+	    this.clockTime = this.initialTime;
+	    this.startTime = Date.now();
 	  };
 
 	  this.refreshDimensions = function() {
@@ -284,6 +293,8 @@
 	      this.map.mapArray[y + dy][x + dx] = origPos;
 	      this.map.mapArray[y][x] = newPos;
 	    } else if(Array.isArray(newPos)) {
+	      if(!this.pointSound.ended) this.pointSound.currentTime = 0;
+	      this.pointSound.play();
 	      this.map.mapArray[y + dy][x + dx] = origPos;
 	      this.map.mapArray[y][x] = 0;
 	      this.score += 1;
@@ -297,6 +308,7 @@
 	    this.clockTime = Math.ceil(this.initialTime - timeDiff);
 
 	    if(this.clockTime === 0) {
+	      this.outOfTimeSound.play();
 	      this.map.renew();
 	      this.lives -= 1;
 	      this.clockTime = this.initialTime;
@@ -304,12 +316,14 @@
 	      this.player.setPos(1, 1);
 	    } else if(this.clockTime <= 10) {
 	      this.clockColor = 'red';
+	      this.lastSecondSound.play();
 	    } else {
 	      this.clockColor = 'white';
 	    }
 	  };
 
 	  this.gameOver = function() {
+	    this.gameOverSound.play();
 	    context.fillStyle = "rgba(180, 180, 180, 0.8)";
 	    context.fillRect(0, 0, canvas.width, canvas.height);
 	    
@@ -526,6 +540,7 @@
 	      this.renderer.levelUp();
 	      this.setPos(1, 1);
 	    } else if(this.renderer.map.mapArray[this.yPos][this.xPos] === 4) {
+	      this.renderer.portalSound.play();
 	      this.renderer.map.refresh(this.xPos, this.yPos);
 	    }
 	  };
