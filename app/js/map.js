@@ -16,6 +16,32 @@ var Map = module.exports = function(cellsX, cellsY) {
   this.enemyFreq = 0.0005;
   this.wallFreq = 0.75;
 
+  // Initialize new game
+  this.init = function() {
+    this.genMap();
+    this.genBlocks();
+  };
+
+  // Renew the map, setting player back to start
+  this.renew = function() {
+    this.renewMap();
+    this.genBlocks();
+  };
+
+  // Refresh the map around the player's current position
+  this.refresh = function(x, y) {
+    this.refreshMap(x, y);
+    this.genBlocks();
+    this.mapArray[y][x] = 3;
+  };
+
+  // Generate all the non-player things
+  this.genBlocks = function() {
+    this.genPortal();
+    this.genEnemy();
+    this.genPoints();
+  };
+
   // Initializes this.mapArray
   this.genMap = function() {
     for(var y = 0; y < this.cellsY; y++) {

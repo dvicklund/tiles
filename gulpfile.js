@@ -1,13 +1,14 @@
 var gulp = require('gulp');
-// var watch = require('gulp-watch');
 var webpack = require('webpack-stream');
 
-// // Watch for changes
-// gulp.task('watch', function() {
-//   return gulp.src('./*')
-//   .pipe(watch('./*'))
-//   .pipe(gulp.dest('build'))
-// });
+// Who watches the watch tasks?
+gulp.task('watch:js', function() {
+  gulp.watch('app/js/**/*.js', ['webpack:dev']);
+});
+
+gulp.task('watch:html', function() {
+  gulp.watch('app/**/*.html', ['static:dev']);
+});
 
 // Move static files to build
 gulp.task('static:dev', function() {
@@ -26,6 +27,7 @@ gulp.task('webpack:dev', function() {
   .pipe(gulp.dest('build'));
 });
 
+gulp.task('watch:all', ['watch:js', 'watch:html']);
 gulp.task('build:dev', ['webpack:dev', 'static:dev']);
 gulp.task('default', ['build:dev']);
 

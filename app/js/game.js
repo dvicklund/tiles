@@ -21,7 +21,7 @@ window.addEventListener('keypress', Player.keyPressed, false);
 // Experimental touch listeners
 
 canvas.addEventListener("touchstart", Player.screenTouched, false);
-canvas.addEventListener("touchend", Player.screenReleased, false);
+// canvas.addEventListener("touchend", Player.screenReleased, false);
 
 
 // Initialize infinite drawing loop

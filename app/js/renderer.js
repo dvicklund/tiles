@@ -14,10 +14,7 @@ var Renderer = module.exports = function(context, width, height) {
 
   // Initialize level map
   this.map = new Map(width, height);
-  this.map.genMap();
-  this.map.genPortal();
-  this.map.genEnemy();
-  this.map.genPoints();
+  this.map.init();
   
   // Score.
   this.score = 0;
@@ -52,7 +49,7 @@ var Renderer = module.exports = function(context, width, height) {
         var colorSeedR = Math.floor(Math.random() * 256);
         var colorSeedG = Math.floor(Math.random() * 256);
         var colorSeedB = Math.floor(Math.random() * 256);
-        this.pointColor = 'rgba(0, ' + colorSeedR + ', ' + colorSeedR + ', 1.0)';
+        this.pointColor = 'rgba('+ colorSeedR + ', ' + colorSeedR + ', 0, 1.0)';
         this.portalColor = 'rgba(' + colorSeedR + ', ' + colorSeedG + ', ' + colorSeedB + ', 1.0)';
         this.enemyColor = 'rgba(' + Math.floor(254 / (Math.abs(this.enemyColorCounter) + 1)).toString() + ', 0, 0,  1.0)';
         this.frameCounter = 0;
@@ -191,10 +188,7 @@ var Renderer = module.exports = function(context, width, height) {
     this.keyPress = function(e) {
       var keyCode = String.fromCharCode(e.keyCode);
       if (keyCode === "r") {
-        this.map.renewMap();
-        this.map.genPortal();
-        this.map.genEnemy();
-        this.map.genPoints();
+        this.map.renew();
         this.score = 0;
         this.xPos = 1;
         this.yPos = 1;

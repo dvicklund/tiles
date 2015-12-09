@@ -10,31 +10,18 @@ var Entity = module.exports = function(rend, cont, xPos, yPos, cps) {
     if(this.renderer.map.mapArray[this.yPos][this.xPos] === 6 && this.controllable === true){
       if(this.renderer.lives > 0) {
         this.renderer.lives--;
-        this.renderer.map.renewMap();
-        this.renderer.map.genPortal();
-        this.renderer.map.genEnemy();
-        this.renderer.map.genPoints();
+        this.renderer.map.renew();
         this.xPos = 1;
         this.yPos = 1;
       } else {
         this.renderer.gameOver();
       }
     } else if(this.renderer.map.mapArray[this.yPos][this.xPos] === 5) {
-      this.renderer.map.increaseLevel();
-      this.renderer.map.renewMap();
-      this.renderer.map.genPortal();
-      this.renderer.map.genEnemy();
-      this.renderer.map.genPoints();
-      this.renderer.score += 5; 
-      this.renderer.checkHiScore();
+      this.renderer.levelUp();
       this.xPos = 1;
       this.yPos = 1;
     } else if(this.renderer.map.mapArray[this.yPos][this.xPos] === 4) {
-      this.renderer.map.refreshMap(this.xPos, this.yPos);
-      this.renderer.map.genPortal();
-      this.renderer.map.genEnemy();
-      this.renderer.map.genPoints();
-      this.renderer.map.mapArray[this.yPos][this.xPos] = 3;
+      this.renderer.map.refresh(this.xPos, this.yPos);
     }
   };
 
@@ -85,22 +72,21 @@ var Entity = module.exports = function(rend, cont, xPos, yPos, cps) {
     } else if (keyCode === "d") {
       this.moveRight();
     } else if (keyCode === "r") {
-      this.renderer.map.renewMap();
-      this.renderer.map.genPortal();
-      this.renderer.map.genEnemy();
-      this.renderer.map.genPoints();
+      this.renderer.map.renew();
       this.renderer.lives--;
       this.xPos = 1;
       this.yPos = 1;
     }
   }.bind(this);
 
+  this.touching = false;
+
   this.screenTouched = function(e) {
     e.preventDefault();
+    this.touching = true;
     var x = e.changedTouches[0].pageX;
     var y = e.changedTouches[0].pageY;
     var ratio = this.renderer.screenRatio;
-
 
     if((x / y) > ratio && ((x - canvas.width) / y) > -ratio) {
       this.moveRight();
@@ -115,6 +101,7 @@ var Entity = module.exports = function(rend, cont, xPos, yPos, cps) {
 
   this.screenReleased = function(e) {
     e.preventDefault();
-  };
+    this.touching = false;
+  }.bind(this);
 };
 

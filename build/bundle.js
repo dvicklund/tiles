@@ -67,7 +67,7 @@
 	// Experimental touch listeners
 
 	canvas.addEventListener("touchstart", Player.screenTouched, false);
-	canvas.addEventListener("touchend", Player.screenReleased, false);
+	// canvas.addEventListener("touchend", Player.screenReleased, false);
 
 
 	// Initialize infinite drawing loop
@@ -94,10 +94,7 @@
 
 	  // Initialize level map
 	  this.map = new Map(width, height);
-	  this.map.genMap();
-	  this.map.genPortal();
-	  this.map.genEnemy();
-	  this.map.genPoints();
+	  this.map.init();
 	  
 	  // Score.
 	  this.score = 0;
@@ -132,7 +129,7 @@
 	        var colorSeedR = Math.floor(Math.random() * 256);
 	        var colorSeedG = Math.floor(Math.random() * 256);
 	        var colorSeedB = Math.floor(Math.random() * 256);
-	        this.pointColor = 'rgba(0, ' + colorSeedR + ', ' + colorSeedR + ', 1.0)';
+	        this.pointColor = 'rgba('+ colorSeedR + ', ' + colorSeedR + ', 0, 1.0)';
 	        this.portalColor = 'rgba(' + colorSeedR + ', ' + colorSeedG + ', ' + colorSeedB + ', 1.0)';
 	        this.enemyColor = 'rgba(' + Math.floor(254 / (Math.abs(this.enemyColorCounter) + 1)).toString() + ', 0, 0,  1.0)';
 	        this.frameCounter = 0;
@@ -271,10 +268,7 @@
 	    this.keyPress = function(e) {
 	      var keyCode = String.fromCharCode(e.keyCode);
 	      if (keyCode === "r") {
-	        this.map.renewMap();
-	        this.map.genPortal();
-	        this.map.genEnemy();
-	        this.map.genPoints();
+	        this.map.renew();
 	        this.score = 0;
 	        this.xPos = 1;
 	        this.yPos = 1;
@@ -311,6 +305,32 @@
 	  this.portalFreq = 0.02;
 	  this.enemyFreq = 0.0005;
 	  this.wallFreq = 0.75;
+
+	  // Initialize new game
+	  this.init = function() {
+	    this.genMap();
+	    this.genBlocks();
+	  };
+
+	  // Renew the map, setting player back to start
+	  this.renew = function() {
+	    this.renewMap();
+	    this.genBlocks();
+	  };
+
+	  // Refresh the map around the player's current position
+	  this.refresh = function(x, y) {
+	    this.refreshMap(x, y);
+	    this.genBlocks();
+	    this.mapArray[y][x] = 3;
+	  };
+
+	  // Generate all the non-player things
+	  this.genBlocks = function() {
+	    this.genPortal();
+	    this.genEnemy();
+	    this.genPoints();
+	  };
 
 	  // Initializes this.mapArray
 	  this.genMap = function() {
@@ -442,31 +462,18 @@
 	    if(this.renderer.map.mapArray[this.yPos][this.xPos] === 6 && this.controllable === true){
 	      if(this.renderer.lives > 0) {
 	        this.renderer.lives--;
-	        this.renderer.map.renewMap();
-	        this.renderer.map.genPortal();
-	        this.renderer.map.genEnemy();
-	        this.renderer.map.genPoints();
+	        this.renderer.map.renew();
 	        this.xPos = 1;
 	        this.yPos = 1;
 	      } else {
 	        this.renderer.gameOver();
 	      }
 	    } else if(this.renderer.map.mapArray[this.yPos][this.xPos] === 5) {
-	      this.renderer.map.increaseLevel();
-	      this.renderer.map.renewMap();
-	      this.renderer.map.genPortal();
-	      this.renderer.map.genEnemy();
-	      this.renderer.map.genPoints();
-	      this.renderer.score += 5; 
-	      this.renderer.checkHiScore();
+	      this.renderer.levelUp();
 	      this.xPos = 1;
 	      this.yPos = 1;
 	    } else if(this.renderer.map.mapArray[this.yPos][this.xPos] === 4) {
-	      this.renderer.map.refreshMap(this.xPos, this.yPos);
-	      this.renderer.map.genPortal();
-	      this.renderer.map.genEnemy();
-	      this.renderer.map.genPoints();
-	      this.renderer.map.mapArray[this.yPos][this.xPos] = 3;
+	      this.renderer.map.refresh(this.xPos, this.yPos);
 	    }
 	  };
 
@@ -517,22 +524,21 @@
 	    } else if (keyCode === "d") {
 	      this.moveRight();
 	    } else if (keyCode === "r") {
-	      this.renderer.map.renewMap();
-	      this.renderer.map.genPortal();
-	      this.renderer.map.genEnemy();
-	      this.renderer.map.genPoints();
+	      this.renderer.map.renew();
 	      this.renderer.lives--;
 	      this.xPos = 1;
 	      this.yPos = 1;
 	    }
 	  }.bind(this);
 
+	  this.touching = false;
+
 	  this.screenTouched = function(e) {
 	    e.preventDefault();
+	    this.touching = true;
 	    var x = e.changedTouches[0].pageX;
 	    var y = e.changedTouches[0].pageY;
 	    var ratio = this.renderer.screenRatio;
-
 
 	    if((x / y) > ratio && ((x - canvas.width) / y) > -ratio) {
 	      this.moveRight();
@@ -547,7 +553,8 @@
 
 	  this.screenReleased = function(e) {
 	    e.preventDefault();
-	  };
+	    this.touching = false;
+	  }.bind(this);
 	};
 
 
