@@ -13,10 +13,12 @@ var Entity = require('./entity');
 // Set up the renderer and player
 var Render = new Renderer(context, Math.round(windowWidth/25), Math.round(windowHeight/25));
 var Player = new Entity(Render, true);
+Render.setPlayer(Player);
 
 // Add window listeners for resizing canvas dimensions and player controls
 window.addEventListener('resize', Render.refreshDimensions, false);
 window.addEventListener('keypress', Player.keyPressed, false);
+
 
 // Experimental touch listeners
 

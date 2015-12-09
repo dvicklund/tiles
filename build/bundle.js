@@ -59,10 +59,12 @@
 	// Set up the renderer and player
 	var Render = new Renderer(context, Math.round(windowWidth/25), Math.round(windowHeight/25));
 	var Player = new Entity(Render, true);
+	Render.setPlayer(Player);
 
 	// Add window listeners for resizing canvas dimensions and player controls
 	window.addEventListener('resize', Render.refreshDimensions, false);
 	window.addEventListener('keypress', Player.keyPressed, false);
+
 
 	// Experimental touch listeners
 
@@ -81,6 +83,9 @@
 	var Map = __webpack_require__(2);
 
 	var Renderer = module.exports = function(context, width, height) {
+	  // To be set from game.js
+	  this.player = {};
+
 	  // Map dimensions number of tiles
 	  this.width = width;
 	  this.height = height;
@@ -99,7 +104,7 @@
 	  // Score.
 	  this.score = 0;
 	  this.highScore = 0;
-	  this.lives = 5;
+	  this.lives = 3;
 	  
 	  // Drawing variables
 	  // var fps = 60;
@@ -109,11 +114,18 @@
 	  this.enemyColor = '';
 	  this.enemyColorCounter = -5;
 
+	  // Time variables
+	  this.clockColor = 'white';
+	  this.initialTime = 30;
+	  this.clockTime = this.initialTime;
+	  this.startTime = Date.now();
+
 	  // Drawing loop - draws the whole damn thing, like, infinity times
 	  this.draw = function() {
 	    var self = this;
+	    this.checkTime();
 
-	    if(this.lives > 0) {
+	    if(this.lives >= 0) {
 	      // Increment frameCounter
 	      this.frameCounter++;
 
@@ -162,6 +174,7 @@
 	      });
 
 	      this.drawLevel();
+	      this.drawClock();
 	      this.drawLives();
 	      this.drawScore();
 	      this.drawHiScore();
@@ -209,11 +222,22 @@
 	    context.fillText('High Score: ' + this.highScore, canvas.width - 20, canvas.height - 5);
 	  };
 
+	  this.drawClock = function() {
+	    context.fillStyle = this.clockColor;
+	    context.font = '1.5em serif';
+	    context.textAlign = 'right';
+	    if(this.clockTime <= 9) {
+	      context.fillText('0:0' + this.clockTime, canvas.width - 20, 22);
+	    } else {
+	      context.fillText("0:" + this.clockTime, canvas.width - 20, 22);
+	    }
+	  };
+
 	  this.drawInstructions = function() {
 	    context.fillStyle = "rgba(180, 180, 180, 0.7)";
 	    context.font = '1.2em sans-serif';
 	    context.textAlign = 'center';
-	    context.fillText('WASD to Move - R to Restart (Lose a Life)', canvas.width / 2, canvas.height - 5);
+	    context.fillText('WASD to Move - R to Restart', canvas.width / 2, canvas.height - 5);
 	  };
 
 	  this.drawLevel = function() {
@@ -229,6 +253,19 @@
 	    for(var i = 0; i < this.lives; i++) {
 	      this.drawTile('blue', i * 2 + 1, 0);
 	    }
+	  };
+
+	  this.setPlayer = function(plyr) {
+	    this.player = plyr;
+	  };
+
+	  this.levelUp = function() {
+	      this.map.increaseLevel();
+	      this.map.renew();
+	      this.score += 5; 
+	      this.checkHiScore();
+	      this.clockTime = this.initialTime;
+	      this.startTime = Date.now();
 	  };
 
 	  this.refreshDimensions = function() {
@@ -254,11 +291,29 @@
 	    }
 	  }.bind(this);
 
+	  this.checkTime = function() {
+	    var nowTime = Date.now();
+	    var timeDiff = (nowTime - this.startTime) / 1000;
+	    this.clockTime = Math.ceil(this.initialTime - timeDiff);
+
+	    if(this.clockTime === 0) {
+	      this.map.renew();
+	      this.lives -= 1;
+	      this.clockTime = this.initialTime;
+	      this.startTime = Date.now();
+	      this.player.setPos(1, 1);
+	    } else if(this.clockTime <= 10) {
+	      this.clockColor = 'red';
+	    } else {
+	      this.clockColor = 'white';
+	    }
+	  };
+
 	  this.gameOver = function() {
 	    context.fillStyle = "rgba(180, 180, 180, 0.8)";
 	    context.fillRect(0, 0, canvas.width, canvas.height);
 	    
-	    context.fillStyle = "blue";
+	    context.fillStyle = "darkblue";
 	    context.font = "3em serif";
 	    context.textAlign = 'center';
 	    context.fillText('You are dead,\npoor blue dot.', canvas.width/2, canvas.height/2);
@@ -269,9 +324,9 @@
 	      var keyCode = String.fromCharCode(e.keyCode);
 	      if (keyCode === "r") {
 	        this.map.renew();
+	        this.startTime = Date.now();
+	        this.clockTime = this.initialTime;
 	        this.score = 0;
-	        this.xPos = 1;
-	        this.yPos = 1;
 	        this.lives += 5;
 	        window.removeEventListener('keypress', this.keyPress, false);
 	        this.draw();
@@ -463,18 +518,21 @@
 	      if(this.renderer.lives > 0) {
 	        this.renderer.lives--;
 	        this.renderer.map.renew();
-	        this.xPos = 1;
-	        this.yPos = 1;
+	        this.setPos(1, 1);
 	      } else {
 	        this.renderer.gameOver();
 	      }
 	    } else if(this.renderer.map.mapArray[this.yPos][this.xPos] === 5) {
 	      this.renderer.levelUp();
-	      this.xPos = 1;
-	      this.yPos = 1;
+	      this.setPos(1, 1);
 	    } else if(this.renderer.map.mapArray[this.yPos][this.xPos] === 4) {
 	      this.renderer.map.refresh(this.xPos, this.yPos);
 	    }
+	  };
+
+	  this.setPos = function(x, y) {
+	    this.xPos = x;
+	    this.yPos = y;
 	  };
 
 	  this.moveUp = function() {
@@ -525,9 +583,7 @@
 	      this.moveRight();
 	    } else if (keyCode === "r") {
 	      this.renderer.map.renew();
-	      this.renderer.lives--;
-	      this.xPos = 1;
-	      this.yPos = 1;
+	      this.setPos(1, 1);
 	    }
 	  }.bind(this);
 

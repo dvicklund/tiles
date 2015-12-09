@@ -11,18 +11,21 @@ var Entity = module.exports = function(rend, cont, xPos, yPos, cps) {
       if(this.renderer.lives > 0) {
         this.renderer.lives--;
         this.renderer.map.renew();
-        this.xPos = 1;
-        this.yPos = 1;
+        this.setPos(1, 1);
       } else {
         this.renderer.gameOver();
       }
     } else if(this.renderer.map.mapArray[this.yPos][this.xPos] === 5) {
       this.renderer.levelUp();
-      this.xPos = 1;
-      this.yPos = 1;
+      this.setPos(1, 1);
     } else if(this.renderer.map.mapArray[this.yPos][this.xPos] === 4) {
       this.renderer.map.refresh(this.xPos, this.yPos);
     }
+  };
+
+  this.setPos = function(x, y) {
+    this.xPos = x;
+    this.yPos = y;
   };
 
   this.moveUp = function() {
@@ -73,9 +76,7 @@ var Entity = module.exports = function(rend, cont, xPos, yPos, cps) {
       this.moveRight();
     } else if (keyCode === "r") {
       this.renderer.map.renew();
-      this.renderer.lives--;
-      this.xPos = 1;
-      this.yPos = 1;
+      this.setPos(1, 1);
     }
   }.bind(this);
 
