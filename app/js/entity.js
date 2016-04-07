@@ -8,7 +8,7 @@ var Entity = module.exports = function(rend, cont, xPos, yPos, cps) {
 
   this.checkPos = function() {
     if(this.renderer.map.mapArray[this.yPos][this.xPos] === 6 && this.controllable === true){
-      if(this.renderer.lives > 0) {
+      if(this.renderer.lives >= 0) {
         this.renderer.lives--;
         this.renderer.map.renew();
         this.setPos(1, 1);
@@ -64,7 +64,7 @@ var Entity = module.exports = function(rend, cont, xPos, yPos, cps) {
       this.checkPos();
     }
   };
-  
+
   this.keyPressed = function(e) {
     var keyCode = String.fromCharCode(e.keyCode);
     if (keyCode === "w") {
@@ -106,4 +106,3 @@ var Entity = module.exports = function(rend, cont, xPos, yPos, cps) {
     this.touching = false;
   }.bind(this);
 };
-
