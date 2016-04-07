@@ -527,6 +527,8 @@
 	      if(this.renderer.lives >= 0) {
 	        this.renderer.lives--;
 	        this.renderer.map.renew();
+	        this.renderer.startTime = Date.now();
+	        this.renderer.clockTime = this.initialTime;
 	        this.setPos(1, 1);
 	      } else {
 	        this.renderer.gameOver();
